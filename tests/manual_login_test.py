@@ -77,7 +77,8 @@ async def manual_login_test():
       print("="*60)
       print("1. A Chrome browser window should have opened")
       print("2. Please log into Facebook manually")
-      print("3. Navigate to the group or just stay on any Facebook page")
+      print("3. You can stay on any Facebook page - the script will navigate")
+      print("   to your specified group automatically")
       print("4. Press ENTER here when you're logged in")
       print("="*60)
 
@@ -91,9 +92,10 @@ async def manual_login_test():
 
       # Try login check with longer timeout
       try:
-        # Just navigate to Facebook main page first
-        await scraper.page.goto("https://www.facebook.com", timeout=30000)
-        await scraper.page.wait_for_timeout(2000)  # Wait 2 seconds
+        # Navigate directly to the group URL instead of just Facebook homepage
+        print(f"🌐 Navigating to group: {group_url}")
+        await scraper.page.goto(group_url, timeout=30000)
+        await scraper.page.wait_for_timeout(3000)  # Wait 3 seconds
 
         # Check current URL
         current_url = scraper.page.url
@@ -101,14 +103,14 @@ async def manual_login_test():
 
         # If we're on facebook.com (not login page), we're likely logged in
         if "facebook.com" in current_url and "login" not in current_url.lower():
-          print("✅ Appears to be logged in!")
+          print("✅ Appears to be logged in and on the group page!")
           is_logged_in = True
         else:
           print("❌ Still on login page or redirected away from Facebook")
           is_logged_in = False
 
       except Exception as e:
-        print(f"⚠️  Could not verify login status: {e}")
+        print(f"⚠️  Could not navigate to group or verify login status: {e}")
         # Ask user if they want to continue anyway
         continue_anyway = input("Continue with scraping anyway? (y/N): ").strip().lower()
         if continue_anyway != 'y':

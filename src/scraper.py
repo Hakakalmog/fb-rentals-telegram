@@ -318,76 +318,71 @@ class FacebookScraper:
       logger.info(f"Scraping posts from: {group_url}")
 
       await self.page.goto(group_url, timeout=30000)
-
-      # Wait for page load with error handling
-      try:
-        await self.page.wait_for_load_state("networkidle", timeout=15000)
-      except TimeoutError:
-        logger.warning("Timeout waiting for networkidle, proceeding anyway")
-        await asyncio.sleep(3)  # Give it a bit more time
-
-      # Check if we need to join the group or handle any popups
-      try:
-        await self.handle_group_access()
-      except Exception as e:
-        logger.warning(f"Group access handling failed: {e}")
-
-      # Scroll and load posts
-      try:
-        await self.scroll_and_load_posts(max_posts)
-      except Exception as e:
-        logger.warning(f"Scroll and load failed: {e}, proceeding with current posts")
-
-      # Find all post elements - use simple approach
-      post_elements = await self.page.query_selector_all('[role="article"]')
-      logger.info(f"Found {len(post_elements)} post elements")
+      
+      # Simple wait for initial load
+      logger.info("Waiting 5 seconds for initial page load...")
+      await asyncio.sleep(5)
+      
+      # Scroll to load more posts
+      logger.info("Scrolling to load more posts...")
+      for scroll in range(3):
+        logger.debug(f"Scroll {scroll + 1}/3...")
+        await self.page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+        await asyncio.sleep(3)      # Find all post elements - use simple approach with filtering
+      all_elements = await self.page.query_selector_all('[role="article"]')
+      logger.info(f"Found {len(all_elements)} total elements")
+      
+      # Filter out empty elements first
+      post_elements = []
+      for i, element in enumerate(all_elements):
+        try:
+          text = await element.inner_text()
+          if len(text.strip()) > 20:  # Only keep elements with substantial content
+            post_elements.append(element)
+            logger.debug(f"Element {i+1}: {len(text)} chars - kept")
+        except Exception as e:
+          logger.debug(f"Element {i+1}: Error getting text - {e}")
+          
+      logger.info(f"Filtered to {len(post_elements)} substantial post elements")
 
       extracted_posts = []
       processed_urls = set()  # Track URLs to avoid duplicates
-
+      
       for i, post_element in enumerate(post_elements):
         try:
-          # First, check if this looks like a substantial post (not just a comment)
-          element_text = await post_element.inner_text()
-
-          # Skip very short content (likely comments)
-          if len(element_text.strip()) < 20:
-            continue
-
-          # Skip if it's mostly UI elements
-          lines = [line.strip() for line in element_text.split('\n')]
-          substantial_lines = [line for line in lines if len(line) > 10 and line not in ['לייק', 'השב', 'שיתוף', 'Like', 'Comment', 'Share']]
-
-          if len(substantial_lines) == 0:
-            continue
-
+          logger.debug(f"Processing post element {i+1}/{len(post_elements)}...")
           post_data = await self.extract_post_data(post_element)
           if post_data:
             # Check for duplicate URLs
             post_url = post_data.get('url', '')
             if post_url in processed_urls:
+              logger.debug(f"Skipping duplicate URL: {post_url[:50]}...")
               continue
             processed_urls.add(post_url)
-
+            
             # Skip comments (they have comment_id in URL)
             if 'comment_id=' in post_url:
               logger.debug(f"Skipping comment: {post_data['content'][:50]}...")
               continue
-
-            # Only keep posts with substantial content
+            
+            # Only keep posts with substantial content (already filtered above, but double-check)
             if len(post_data['content'].strip()) > 15:
               post_data["group_url"] = group_url
               extracted_posts.append(post_data)
-              logger.debug(f"Extracted post {len(extracted_posts)}: {post_data['content'][:50]}...")
-
+              logger.info(f"✅ Extracted post {len(extracted_posts)}: {post_data.get('author', 'No author')} - {post_data['content'][:50]}...")
+              
               # Stop when we have enough posts
               if len(extracted_posts) >= max_posts:
                 break
-
+            else:
+              logger.debug(f"Skipping post with short content: {len(post_data['content'])} chars")
+          else:
+            logger.debug(f"Post element {i+1} returned no data")
+              
         except Exception as e:
           logger.error(f"Error processing post {i+1}: {e}")
           continue
-
+          
       logger.info(
         f"Successfully extracted {len(extracted_posts)} posts from {group_url}"
       )
