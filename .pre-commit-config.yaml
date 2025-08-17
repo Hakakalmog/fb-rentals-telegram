@@ -1,0 +1,138 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+  # Built-in pre-commit hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      # File formatting and cleanup
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+      - id: check-xml
+      - id: pretty-format-json
+        args: [--autofix, --indent=2]
+
+      # Security and safety checks
+      - id: check-added-large-files
+        args: [--maxkb=1024]
+      - id: check-ast
+      - id: check-builtin-literals
+      - id: check-case-conflict
+      - id: check-docstring-first
+      - id: check-merge-conflict
+      - id: check-symlinks
+      - id: debug-statements
+      - id: detect-private-key
+
+      # Python specific
+      - id: check-executables-have-shebangs
+      - id: fix-byte-order-marker
+      - id: mixed-line-ending
+      - id: requirements-txt-fixer
+
+  # Black - Python code formatter (disabled to maintain 2-space indentation)
+  # - repo: https://github.com/psf/black
+  #   rev: 23.12.1
+  #   hooks:
+  #     - id: black
+  #       language_version: python3
+  #       args: [--line-length=88, --target-version=py311]
+
+  # isort - Import sorting
+  - repo: https://github.com/PyCQA/isort
+    rev: 6.0.1
+    hooks:
+      - id: isort
+        args: [--line-length=88, --multi-line=3, --trailing-comma]
+
+  # Ruff - Fast Python linter (replaces flake8, pylint, etc.)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.9
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+
+  # pydocstyle - Docstring style checking
+  - repo: https://github.com/PyCQA/pydocstyle
+    rev: 6.3.0
+    hooks:
+      - id: pydocstyle
+        args: [--convention=google, --add-ignore=D100, D104, D105, D107]
+
+  # pyupgrade - Upgrade Python syntax
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.15.0
+    hooks:
+      - id: pyupgrade
+        args: [--py311-plus]
+
+  # autoflake - Remove unused imports and variables
+  - repo: https://github.com/PyCQA/autoflake
+    rev: v2.2.1
+    hooks:
+      - id: autoflake
+        args:
+          [--remove-all-unused-imports, --remove-unused-variables, --in-place]
+
+  # Shell script linting
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.9.0.6
+    hooks:
+      - id: shellcheck
+
+  # Dockerfile linting
+  - repo: https://github.com/hadolint/hadolint
+    rev: v2.12.0
+    hooks:
+      - id: hadolint-docker
+        args: [--ignore=DL3008, --ignore=DL3009]
+
+  # YAML formatting
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v4.0.0-alpha.8
+    hooks:
+      - id: prettier
+        types_or: [yaml, markdown, json]
+        args: [--prose-wrap=always, --print-width=80]
+
+  # Commit message validation
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v3.13.0
+    hooks:
+      - id: commitizen
+
+  # Cleanup cache directories after all hooks
+  - repo: local
+    hooks:
+      - id: cleanup-cache
+        name: cleanup cache directories
+        entry: sh -c 'rm -rf node_modules .ruff_cache || true'
+        language: system
+        always_run: true
+        pass_filenames: false
+        stages: [pre-commit, manual]
+
+# Files to exclude globally
+exclude: |
+  (?x)^(
+    venv/.*|
+    \.venv/.*|
+    build/.*|
+    dist/.*|
+    \.git/.*|
+    __pycache__/.*|
+    .*\.pyc|
+    browser_data/.*|
+    data/.*|
+    logs/.*
+  )$
+
+# Fail fast on first error
+fail_fast: false
+
+# Minimum pre-commit version
+minimum_pre_commit_version: 3.0.0

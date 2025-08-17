@@ -1,0 +1,50 @@
+version: "3.8"
+
+services:
+  # Ollama service for LLM inference
+  ollama:
+    image: ollama/ollama:latest
+    container_name: fb-rentals-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    restart: unless-stopped
+    # For GPU support (uncomment if you have NVIDIA GPU)
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+  # Main scraper application
+  fb-rentals-bot:
+    build: .
+    container_name: fb-rentals-bot
+    depends_on:
+      - ollama
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./browser_data:/app/browser_data
+      - ./.env:/app/.env
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+      - DATABASE_PATH=/app/data/posts.db
+      - LOG_FILE=/app/logs/app.log
+      - BROWSER_DATA_DIR=/app/browser_data
+    restart: unless-stopped
+    # Add this if you need to run with specific user permissions
+    # user: "${UID}:${GID}"
+
+volumes:
+  ollama_data:
+    driver: local
+
+networks:
+  default:
+    name: fb-rentals-network
