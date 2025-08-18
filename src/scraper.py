@@ -318,11 +318,11 @@ class FacebookScraper:
       logger.info(f"Scraping posts from: {group_url}")
 
       await self.page.goto(group_url, timeout=30000)
-      
+
       # Simple wait for initial load
       logger.info("Waiting 5 seconds for initial page load...")
       await asyncio.sleep(5)
-      
+
       # Scroll to load more posts
       logger.info("Scrolling to load more posts...")
       for scroll in range(3):
@@ -331,7 +331,7 @@ class FacebookScraper:
         await asyncio.sleep(3)      # Find all post elements - use simple approach with filtering
       all_elements = await self.page.query_selector_all('[role="article"]')
       logger.info(f"Found {len(all_elements)} total elements")
-      
+
       # Filter out empty elements first
       post_elements = []
       for i, element in enumerate(all_elements):
@@ -342,12 +342,12 @@ class FacebookScraper:
             logger.debug(f"Element {i+1}: {len(text)} chars - kept")
         except Exception as e:
           logger.debug(f"Element {i+1}: Error getting text - {e}")
-          
+
       logger.info(f"Filtered to {len(post_elements)} substantial post elements")
 
       extracted_posts = []
       processed_urls = set()  # Track URLs to avoid duplicates
-      
+
       for i, post_element in enumerate(post_elements):
         try:
           logger.debug(f"Processing post element {i+1}/{len(post_elements)}...")
@@ -359,18 +359,18 @@ class FacebookScraper:
               logger.debug(f"Skipping duplicate URL: {post_url[:50]}...")
               continue
             processed_urls.add(post_url)
-            
+
             # Skip comments (they have comment_id in URL)
             if 'comment_id=' in post_url:
               logger.debug(f"Skipping comment: {post_data['content'][:50]}...")
               continue
-            
+
             # Only keep posts with substantial content (already filtered above, but double-check)
             if len(post_data['content'].strip()) > 15:
               post_data["group_url"] = group_url
               extracted_posts.append(post_data)
               logger.info(f"✅ Extracted post {len(extracted_posts)}: {post_data.get('author', 'No author')} - {post_data['content'][:50]}...")
-              
+
               # Stop when we have enough posts
               if len(extracted_posts) >= max_posts:
                 break
@@ -378,11 +378,11 @@ class FacebookScraper:
               logger.debug(f"Skipping post with short content: {len(post_data['content'])} chars")
           else:
             logger.debug(f"Post element {i+1} returned no data")
-              
+
         except Exception as e:
           logger.error(f"Error processing post {i+1}: {e}")
           continue
-          
+
       logger.info(
         f"Successfully extracted {len(extracted_posts)} posts from {group_url}"
       )

@@ -5,22 +5,9 @@ import asyncio
 import json
 import logging
 import os
-import sys
 from datetime import datetime
 
-# Add src directory to Python path
-current_dir = os.path.dirname(__file__)
-src_dir = os.path.join(current_dir, "..", "src")
-sys.path.insert(0, os.path.abspath(src_dir))
-
-try:
-  from scraper import FacebookScraper
-except ImportError as e:
-  print(f"Import error: {e}")
-  print(f"Current dir: {current_dir}")
-  print(f"Src dir: {src_dir}")
-  print(f"Absolute src dir: {os.path.abspath(src_dir)}")
-  sys.exit(1)
+from scraper import FacebookScraper
 
 
 def setup_logging():
