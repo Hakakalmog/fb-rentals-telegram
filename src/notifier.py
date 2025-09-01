@@ -32,49 +32,40 @@ class TelegramNotifier:
   def format_post_message(self, post: dict[str, Any]) -> str:
     """Format a post as a Telegram message."""
     try:
-      post.get("title", "No title")
       content = post.get("content", "")
       author = post.get("author", "Unknown")
-      price = post.get("price", "")
-      location = post.get("location", "")
       url = post.get("url", "")
       group_url = post.get("group_url", "")
-      relevance_score = post.get("relevance_score", 0)
+      timestamp = post.get("timestamp", "")
 
       # Clean and truncate content for better readability
       content = self.clean_text_for_telegram(content)
-      if len(content) > 800:  # Telegram message limit consideration
-        content = content[:800] + "..."
+      if len(content) > 1000:  # Telegram message limit consideration
+        content = content[:1000] + "..."
 
       # Build message
       message_parts = []
 
       # Title/Header with emoji
-      message_parts.append("🏠 *New Rental Listing*")
+      message_parts.append("🏠 *New Rental Post*")
 
       # Author
       if author:
         message_parts.append(f"👤 *Author:* {html.escape(author)}")
 
-      # Price
-      if price:
-        message_parts.append(f"💰 *Price:* {html.escape(price)}")
-
-      # Location
-      if location:
-        message_parts.append(f"📍 *Location:* {html.escape(location)}")
+      # Timestamp
+      if timestamp:
+        try:
+          from datetime import datetime
+          dt = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+          formatted_time = dt.strftime("%Y-%m-%d %H:%M")
+          message_parts.append(f"⏰ *Posted:* {formatted_time}")
+        except:
+          message_parts.append(f"⏰ *Posted:* {timestamp[:19]}")
 
       # Content
       if content:
-        message_parts.append(f"📝 *Description:*\n{html.escape(content)}")
-
-      # Relevance score
-      confidence_emoji = (
-        "🟢" if relevance_score > 0.8 else "🟡" if relevance_score > 0.5 else "🔴"
-      )
-      message_parts.append(
-        f"{confidence_emoji} *Relevance:* {relevance_score:.1%}"
-      )
+        message_parts.append(f"📝 *Content:*\n{html.escape(content)}")
 
       # URLs
       if url:
@@ -159,16 +150,18 @@ class TelegramNotifier:
 
   def create_simple_message(self, post: dict[str, Any]) -> str:
     """Create a simple text message without markdown formatting."""
-    post.get("title", "No title")
-    content = post.get("content", "")[:500]
+    content = post.get("content", "")[:800]  # Increased limit since no other fields
     author = post.get("author", "Unknown")
-    price = post.get("price", "Not specified")
     url = post.get("url", "")
+    timestamp = post.get("timestamp", "")
 
-    message = "🏠 New Rental Listing\n\n"
+    message = "🏠 New Rental Post\n\n"
     message += f"Author: {author}\n"
-    message += f"Price: {price}\n"
-    message += f"Description: {content}\n"
+    
+    if timestamp:
+      message += f"Posted: {timestamp[:19]}\n"
+    
+    message += f"Content: {content}\n"
 
     if url:
       message += f"\nView: {url}"

@@ -92,10 +92,10 @@ class FacebookScraper:
       logger.error(f"Error checking login status: {e}")
       return False
 
-  def generate_post_id(self, url: str, title: str, content: str) -> str:
+  def generate_post_id(self, url: str, content: str, author: str) -> str:
     """Generate a unique ID for a post."""
     content_hash = hashlib.md5(
-      f"{url}_{title}_{content[:100]}".encode(), usedforsecurity=False
+      f"{url}_{author}_{content[:100]}".encode(), usedforsecurity=False
     ).hexdigest()
     return content_hash
 
@@ -118,7 +118,6 @@ class FacebookScraper:
 
       # Extract post text content - simplified and more reliable approach
       content = ""
-      title = ""
 
       try:
         # Get all text from the element
@@ -162,20 +161,6 @@ class FacebookScraper:
           # Join the meaningful lines
           if clean_lines:
             content = '\n'.join(clean_lines)
-
-        # Create title from first meaningful sentence
-        if content:
-          sentences = content.split('\n')
-          for sentence in sentences:
-            if len(sentence.strip()) > 15:  # Substantial sentence
-              title = sentence.strip()[:100]
-              if len(sentence) > 100:
-                title += "..."
-              break
-
-          # Fallback title
-          if not title:
-            title = content[:100] + ("..." if len(content) > 100 else "")
 
       except Exception as e:
         logger.debug(f"Error extracting post content: {e}")
@@ -222,11 +207,11 @@ class FacebookScraper:
       except (AttributeError, TypeError, ValueError):
         pass
 
-      # Extract price from content using regex
-      price = self.extract_price_from_text(content)
+      # Extract price from content using regex (not used in output)
+      # price = self.extract_price_from_text(content)
 
-      # Extract location from content
-      location = self.extract_location_from_text(content)
+      # Extract location from content (not used in output)  
+      # location = self.extract_location_from_text(content)
 
       # Skip posts with no meaningful content (be less strict)
       if not content.strip():
@@ -244,10 +229,7 @@ class FacebookScraper:
       return {
         "id": post_id,
         "url": post_url,
-        "title": title or content[:100] + ("..." if len(content) > 100 else ""),
         "content": content,
-        "price": price,
-        "location": location,
         "author": author,
         "timestamp": timestamp.isoformat(),
       }
