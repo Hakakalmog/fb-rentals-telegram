@@ -301,6 +301,50 @@ class FacebookScraper:
       if scroll_attempts >= 3 and posts_loaded == 0:
         break
 
+  async def extract_group_name(self) -> str:
+    """Extract the Facebook group name from the current page."""
+    try:
+      # Try multiple selectors for group name
+      group_name_selectors = [
+        "h1[data-testid='group-name']",
+        "h1[dir='auto']", 
+        "h1 span",
+        "[data-testid='group-name'] span",
+        "h1",
+        ".x1heor9g .x1qlqyl8 .x1pd3egz .x1a2a7pz span"
+      ]
+      
+      for selector in group_name_selectors:
+        try:
+          element = await self.page.query_selector(selector)
+          if element:
+            name = await element.inner_text()
+            name = name.strip()
+            if name and len(name) > 0 and "Facebook" not in name:
+              logger.debug(f"Found group name with selector '{selector}': {name}")
+              return name
+        except Exception as e:
+          logger.debug(f"Failed to get group name with selector '{selector}': {e}")
+          continue
+      
+      # Fallback: try to extract from page title
+      try:
+        title = await self.page.title()
+        if title and " | " in title:
+          group_name = title.split(" | ")[0].strip()
+          if group_name and "Facebook" not in group_name:
+            logger.debug(f"Extracted group name from title: {group_name}")
+            return group_name
+      except Exception as e:
+        logger.debug(f"Failed to extract group name from title: {e}")
+      
+      logger.warning("Could not extract group name, using fallback")
+      return "Unknown Group"
+      
+    except Exception as e:
+      logger.error(f"Error extracting group name: {e}")
+      return "Unknown Group"
+
   async def scrape_group_posts(
     self, group_url: str, max_posts: int = 50
   ) -> list[dict[str, Any]]:
@@ -336,6 +380,10 @@ class FacebookScraper:
 
       logger.info(f"Filtered to {len(post_elements)} substantial post elements")
 
+      # Extract group name once for all posts
+      group_name = await self.extract_group_name()
+      logger.info(f"Group name: {group_name}")
+
       extracted_posts = []
       processed_urls = set()  # Track URLs to avoid duplicates
 
@@ -359,6 +407,7 @@ class FacebookScraper:
             # Only keep posts with substantial content (already filtered above, but double-check)
             if len(post_data['content'].strip()) > 15:
               post_data["group_url"] = group_url
+              post_data["group_name"] = group_name
               extracted_posts.append(post_data)
               logger.info(f"✅ Extracted post {len(extracted_posts)}: {post_data.get('author', 'No author')} - {post_data['content'][:50]}...")
 
