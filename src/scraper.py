@@ -49,8 +49,17 @@ class FacebookScraper:
       ],
     )
 
-    # Create a new page
-    self.page = await self.context.new_page()
+    # Use the existing page from persistent context instead of creating a new one
+    pages = self.context.pages
+    if pages:
+      # Close all extra pages except the first one to avoid multiple browser windows
+      for i, page in enumerate(pages):
+        if i == 0:
+          self.page = page  # Use the first page
+        else:
+          await page.close()  # Close extra pages
+    else:
+      self.page = await self.context.new_page()  # Fallback: create new page if none exist
 
     # Set user agent to avoid detection
     await self.page.set_extra_http_headers({
