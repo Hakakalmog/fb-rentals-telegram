@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 class FacebookScraper:
   """Handles Facebook group scraping using Playwright with persistent sessions."""
 
-  def __init__(self, browser_data_dir: str = "./browser_data", headless: bool = True):
+  def __init__(self, browser_data_dir: str = "./browser_data", headless: bool = False):
     """Initialize scraper with browser configuration."""
     self.browser_data_dir = browser_data_dir
     self.headless = headless
@@ -483,7 +483,7 @@ class FacebookScraper:
 
 # Async context manager usage example
 async def scrape_facebook_groups(
-  group_urls: list[str], max_posts_per_group: int = 50, headless: bool = True
+  group_urls: list[str], max_posts_per_group: int = 50, headless: bool = False
 ) -> list[dict[str, Any]]:
   """Scrape posts from multiple Facebook groups."""
   all_posts = []

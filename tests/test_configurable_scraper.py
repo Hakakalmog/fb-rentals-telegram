@@ -72,7 +72,7 @@ class FacebookTestScraper:
             # Force visible browser for login (like manual test)
             print("🖥️  Running in VISIBLE mode for login verification")
             
-            async with FacebookScraper(headless=False) as scraper:
+            async with FacebookScraper() as scraper:
                 await scraper.initialize_browser()
                 
                 # Navigate to Facebook first (like manual test does)

@@ -83,7 +83,7 @@ class FacebookRentalScraper:
     # Scraping configuration
     self.max_posts_per_scrape = int(os.getenv("MAX_POSTS_PER_SCRAPE", 50))
     self.scrape_interval = int(os.getenv("SCRAPE_INTERVAL_MINUTES", 30))
-    self.headless_mode = os.getenv("HEADLESS_MODE", "true").lower() == "true"
+    self.headless_mode = os.getenv("HEADLESS_MODE", "false").lower() == "true"
 
     self.logger.info("Facebook Rental Scraper initialized")
     self.logger.info(f"Monitoring {len(self.group_urls)} groups")
