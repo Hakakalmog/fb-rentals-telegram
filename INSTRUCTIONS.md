@@ -28,8 +28,8 @@ The bot runs in a continuous loop that repeats every SCRAPE_INTERVAL_MINUTES (co
    **2.3 AI Analysis with Ollama**
    - Send new posts to local OLLAMA_MODEL
    - Analyze based on criteria:
-     - Price (max from MAX_PRICE env var)
-     - Room count, apartment type, etc.
+     - Price (within budget range)
+     - Room count (minimum requirements), apartment type, etc.
    - Get "MATCH" or "NO MATCH" result
 
    **2.4 Send Matching Posts to Telegram**
@@ -59,7 +59,6 @@ The bot runs in a continuous loop that repeats every SCRAPE_INTERVAL_MINUTES (co
 | `FB_GROUP_URLS` | Comma-separated Facebook group URLs | `https://facebook.com/groups/X,https://facebook.com/groups/Y` | - |
 | `SCRAPE_INTERVAL_MINUTES` | Minutes between scraping cycles | `X` | X |
 | `MAX_POSTS_PER_SCRAPE` | Posts to scrape per group per cycle | `X` | X |
-| `MAX_PRICE` | Maximum acceptable rent price | `X` | X |
 | `OLLAMA_MODEL` | AI model for analysis | `llama3.1:latest` | llama3.1:latest |
 | `OLLAMA_HOST` | Ollama server URL | `http://localhost:11434` | http://localhost:11434 |
 | `TELEGRAM_BOT_TOKEN` | Bot token from @BotFather | `XXXXXX:ABC-DEF...` | - |
@@ -216,9 +215,8 @@ python tests/test_manual_group_scraper.py
 3. Monitor logs for successful scraping
 
 ### Adjusting AI Criteria
-1. Modify prompts in `src/analyzer.py`
-2. Update `MAX_PRICE`
-3. Test with `python tests/manual_analyzer_test.py`
+1. Modify prompts in `src/analyzer.py` (price limit is set in the prompt)
+2. Test with `python tests/manual_analyzer_test.py`
 
 ### Changing Schedule
 1. Update `SCRAPE_INTERVAL_MINUTES` in `.env`

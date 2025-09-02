@@ -58,9 +58,6 @@ TELEGRAM_CHAT_ID=your_chat_id_here
 # Facebook Groups URLs (comma-separated)
 FB_GROUP_URLS=https://www.facebook.com/groups/group1,https://www.facebook.com/groups/group2
 
-# Filter Configuration
-MAX_PRICE=2000
-
 # Scraping Configuration
 SCRAPE_INTERVAL_MINUTES=30
 MAX_POSTS_PER_SCRAPE=50
@@ -202,10 +199,6 @@ crontab -e
 | `FB_GROUP_URLS`      | Comma-separated Facebook group URLs | Required |
 
 ### Filtering Settings
-
-| Variable            | Description                       | Default |
-| ------------------- | --------------------------------- | ------- |
-| `MAX_PRICE`         | Maximum rent price                | 2000    |
 
 ### Scraping Settings
 

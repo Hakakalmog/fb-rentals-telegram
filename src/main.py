@@ -66,9 +66,6 @@ class FacebookRentalScraper:
     fb_groups = os.getenv("FB_GROUP_URLS", "").strip()
     self.group_urls = [url.strip() for url in fb_groups.split(",") if url.strip()]
 
-    # Filter configuration
-    max_price = int(os.getenv("MAX_PRICE", 2000))
-
     self.analyzer = ApartmentAnalyzer()
 
     # Telegram notifier
