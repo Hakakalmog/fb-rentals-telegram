@@ -56,7 +56,6 @@ def mock_env_vars(monkeypatch):
     "FB_GROUP_URLS": "https://facebook.com/groups/test1,https://facebook.com/groups/test2",
     "MAX_PRICE": "2000",
     "LOCATION_KEYWORDS": "tel aviv,ramat gan",
-    "EXCLUDED_KEYWORDS": "no pets,smokers only",
     "OLLAMA_HOST": "http://localhost:11434",
     "OLLAMA_MODEL": "llama3.2:3b",
     "DATABASE_PATH": ":memory:",

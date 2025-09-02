@@ -2,6 +2,7 @@
 """Apartment post analyzer using Ollama LLM."""
 
 import logging
+import os
 import ollama
 from typing import Dict, Any
 
@@ -11,11 +12,11 @@ logger = logging.getLogger(__name__)
 class ApartmentAnalyzer:
     """Analyzes apartment posts using Ollama LLM to match rental criteria."""
 
-    def __init__(self, model_name: str = "llama3.1:70b", ollama_host: str = "http://localhost:11434"):
+    def __init__(self, model_name: str = None, ollama_host: str = None):
         """Initialize the analyzer with Ollama configuration."""
-        self.model_name = model_name
-        self.ollama_host = ollama_host
-        self.client = ollama.Client(host=ollama_host)
+        self.model_name = model_name or os.getenv("OLLAMA_MODEL", "llama3.1:latest")
+        self.ollama_host = ollama_host or os.getenv("OLLAMA_HOST", "http://localhost:11434")
+        self.client = ollama.Client(host=self.ollama_host)
         
     def create_analysis_prompt(self, post_content: str, author: str) -> str:
         """Create a Hebrew prompt for apartment analysis."""
@@ -160,7 +161,7 @@ class ApartmentAnalyzer:
 
 
 # Example usage function
-def analyze_facebook_posts(posts: list[Dict[str, Any]], model_name: str = "llama3.1:70b") -> list[Dict[str, Any]]:
+def analyze_facebook_posts(posts: list[Dict[str, Any]], model_name: str = None) -> list[Dict[str, Any]]:
     """Convenience function to analyze Facebook posts."""
     analyzer = ApartmentAnalyzer(model_name=model_name)
     

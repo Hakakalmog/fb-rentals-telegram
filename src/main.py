@@ -73,18 +73,12 @@ class FacebookRentalScraper:
       for kw in os.getenv("LOCATION_KEYWORDS", "").split(",")
       if kw.strip()
     ]
-    excluded_keywords = [
-      kw.strip()
-      for kw in os.getenv("EXCLUDED_KEYWORDS", "").split(",")
-      if kw.strip()
-    ]
 
     self.filter = LLaMAFilter(
       ollama_host=os.getenv("OLLAMA_HOST", "http://localhost:11434"),
       model_name=os.getenv("OLLAMA_MODEL", "llama3.2:3b"),
       max_price=max_price,
       location_keywords=location_keywords,
-      excluded_keywords=excluded_keywords,
     )
 
     # Telegram notifier

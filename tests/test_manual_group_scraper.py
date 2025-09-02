@@ -1,11 +1,21 @@
 #!/usr/bin/env python3
-"""Manual test to scrape 5 posts from a specific Facebook group and analyze them."""
+"""Manual test to scrape 5 posts from a specific Facebook group a        'analysis_criteria': {
+            'rooms': '3+ rooms required',
+            'price': 'max 5,900₪ per month',
+            'type': 'rental only (not sale)'
+        },
+        'ollama_model': os.getenv("OLLAMA_MODEL", "llama3.1:latest"),
+        'posts_with_analysis': posts_with_analysisyze them."""
 
 import sys
 import os
 import asyncio
 import json
 from datetime import datetime
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Add the src directory to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
@@ -283,7 +293,7 @@ async def test_manual_group_scraping(group_url: str):
             if len(post.get('content', '')) > 150:
                 print("    [Content truncated...]")
             
-            print(f"🤖 Analyzing with Ollama (llama3.1:70b)...")
+            print(f"🤖 Analyzing with Ollama ({os.getenv('OLLAMA_MODEL', 'llama3.1:latest')})...")
             result = analyzer.analyze_post(post)
             
             # Add analysis result to post data
@@ -374,7 +384,7 @@ if __name__ == "__main__":
     print("=" * 40)
     print("This test will:")
     print("• Scrape the first 3 posts from a Facebook group")
-    print("• Analyze each post with Ollama (llama3.1:70b) for apartment rental criteria")
+    print(f"• Analyze each post with Ollama ({os.getenv('OLLAMA_MODEL', 'llama3.1:latest')}) for apartment rental criteria")
     print("• Show detailed results for each post")
     print()
     

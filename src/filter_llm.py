@@ -17,14 +17,12 @@ class LLaMAFilter:
     model_name: str = "llama3.2:3b",
     max_price: int = 2000,
     location_keywords: list[str] = None,
-    excluded_keywords: list[str] = None,
   ):
     """Initialize filter with AI model configuration and filtering rules."""
     self.ollama_host = ollama_host.rstrip("/")
     self.model_name = model_name
     self.max_price = max_price
     self.location_keywords = location_keywords or []
-    self.excluded_keywords = excluded_keywords or []
     self.session = requests.Session()
 
   def check_ollama_connection(self) -> bool:
@@ -110,21 +108,7 @@ class LLaMAFilter:
       "reasons": [],
       "price_extracted": None,
       "locations_found": [],
-      "excluded_found": [],
     }
-
-    # Check for excluded keywords
-    excluded_found = []
-    for keyword in self.excluded_keywords:
-      if keyword.lower() in full_text:
-        excluded_found.append(keyword)
-
-    if excluded_found:
-      result["passes_basic_filter"] = False
-      result["excluded_found"] = excluded_found
-      result["reasons"].append(
-        f"Contains excluded keywords: {', '.join(excluded_found)}"
-      )
 
     # Extract and check price
     price = self.extract_price_from_content(full_text)
