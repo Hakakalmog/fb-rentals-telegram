@@ -9,7 +9,7 @@ import schedule
 from dotenv import load_dotenv
 
 from .db import DatabaseManager
-from .filter_llm import LLaMAFilter
+from .analyzer import ApartmentAnalyzer
 from .notifier import TelegramNotifier
 from .scraper import scrape_facebook_groups
 
@@ -69,11 +69,7 @@ class FacebookRentalScraper:
     # Filter configuration
     max_price = int(os.getenv("MAX_PRICE", 2000))
 
-    self.filter = LLaMAFilter(
-      ollama_host=os.getenv("OLLAMA_HOST", "http://localhost:11434"),
-      model_name=os.getenv("OLLAMA_MODEL", "llama3.2:3b"),
-      max_price=max_price,
-    )
+    self.analyzer = ApartmentAnalyzer()
 
     # Telegram notifier
     telegram_token = os.getenv("TELEGRAM_BOT_TOKEN")
@@ -122,15 +118,11 @@ class FacebookRentalScraper:
       self.logger.error(f"Database connection failed: {e}")
       return False
 
-    # Test LLM connection (optional)
-    if self.filter.check_ollama_connection():
+    # Test Ollama connection (optional)
+    if self.analyzer.test_ollama_connection():
       self.logger.info("Ollama connection successful")
-      if not self.filter.ensure_model_available():
-        self.logger.warning(
-          "LLM model not available, will use fallback filtering"
-        )
     else:
-      self.logger.warning("Ollama not available, will use fallback filtering")
+      self.logger.warning("Ollama not available, analyzer may fail")
 
     self.logger.info("Configuration validation completed")
     return True
@@ -169,7 +161,7 @@ class FacebookRentalScraper:
         return []
 
       # Filter posts using LLM
-      relevant_posts = self.filter.filter_posts(new_posts)
+      relevant_posts = self.analyzer.filter_posts(new_posts)
 
       self.logger.info(f"Filtered to {len(relevant_posts)} relevant posts")
 

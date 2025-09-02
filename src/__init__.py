@@ -9,8 +9,8 @@ __version__ = "1.0.0"
 __author__ = "Your Name"
 __email__ = "your.email@example.com"
 
+from .analyzer import ApartmentAnalyzer
 from .db import DatabaseManager
-from .filter_llm import LLaMAFilter
 # Main components
 from .main import FacebookRentalScraper
 from .notifier import TelegramNotifier
@@ -20,7 +20,7 @@ __all__ = [
   "FacebookRentalScraper",
   "FacebookScraper",
   "scrape_facebook_groups",
-  "LLaMAFilter",
+  "ApartmentAnalyzer",
   "TelegramNotifier",
   "DatabaseManager",
 ]

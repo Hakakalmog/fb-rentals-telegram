@@ -228,7 +228,7 @@ crontab -e
 fb-rentals-telegram/
 ├── main.py                    # Main application entry point
 ├── scraper.py                 # Facebook scraping logic
-├── filter_llm.py              # AI filtering logic
+├── analyzer.py                # AI apartment analysis logic
 ├── notifier.py                # Telegram notifications
 ├── db.py                     # Database operations
 ├── requirements.txt          # Production dependencies
@@ -364,7 +364,7 @@ fb-rentals-telegram/
 │   ├── __init__.py
 │   ├── main.py            # Main application class
 │   ├── scraper.py         # Facebook scraping logic
-│   ├── filter_llm.py      # LLM filtering
+│   ├── analyzer.py        # AI apartment analysis
 │   ├── notifier.py        # Telegram notifications
 │   └── db.py             # Database operations
 ├── tests/                 # Test files

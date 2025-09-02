@@ -159,6 +159,10 @@ class ApartmentAnalyzer:
         logger.info(f"Found {len(match_posts)} matching posts out of {len(posts)} total")
         return match_posts
 
+    def filter_posts(self, posts: list[Dict[str, Any]]) -> list[Dict[str, Any]]:
+        """Filter posts to return only relevant/matching ones (alias for get_match_posts)."""
+        return self.get_match_posts(posts)
+
 
 # Example usage function
 def analyze_facebook_posts(posts: list[Dict[str, Any]], model_name: str = None) -> list[Dict[str, Any]]:
