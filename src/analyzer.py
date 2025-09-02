@@ -19,36 +19,38 @@ class ApartmentAnalyzer:
         self.client = ollama.Client(host=self.ollama_host)
         
     def create_analysis_prompt(self, post_content: str, author: str) -> str:
-        """Create a Hebrew prompt for apartment analysis."""
-        prompt = f"""בדוק את הפוסט הזה:
+        """Create an English prompt for apartment analysis with Hebrew content."""
+        prompt = f"""Analyze this Hebrew apartment post:
 
 "{post_content}"
 
-חוקי בדיקה - בדוק כל תנאי:
+Check these criteria strictly:
 
-1. מטרה - האם להשכרה?
-   - אם כתוב "להשכרה" = מתאים ✓
-   - אם כתוב "למכירה" = לא מתאים ✗
-   - אם לא כתוב כלום על מטרה = מתאים ✓ (ברירת מחדל)
+1. PURPOSE - Is it for rent?
+   - If mentions "להשכרה" (for rent) = PASS ✓
+   - If mentions "למכירה" (for sale) = FAIL ✗
+   - If no purpose mentioned = PASS ✓ (default)
 
-2. חדרים - האם 3 חדרים או יותר?
-   - חדר אחד = לא מתאים ✗
-   - חדר וחצי = לא מתאים ✗  
-   - 2 חדרים = לא מתאים ✗
-   - 2.5 חדרים = לא מתאים ✗
-   - 3 חדרים = מתאים ✓
-   - 3.5 חדרים ומעלה = מתאים ✓
-   - אם לא מוזכר מספר חדרים = לא מתאים ✗
+2. ROOMS - Is it 3+ rooms?
+   - 1 room (חדר אחד) = FAIL ✗
+   - 1.5 rooms (חדר וחצי) = FAIL ✗  
+   - 2 rooms (2 חדרים) = FAIL ✗
+   - 2.5 rooms (2.5 חדרים) = FAIL ✗
+   - 3 rooms (3 חדרים) = PASS ✓
+   - 3.5+ rooms (3.5 חדרים ומעלה) = PASS ✓
+   - No room count mentioned = FAIL ✗
 
-3. מחיר - האם עד 5900 שקל?
-   - עד 5900 = מתאים ✓
-   - מעל 5900 = לא מתאים ✗
-   - אם לא מוזכר מחיר = מתאים ✓ (ברירת מחדל)
+3. PRICE - Is it within budget (5900 or less)?
+   - 5900 or below = PASS ✓
+   - Above 5900 = FAIL ✗
+   - No price mentioned = PASS ✓ (default)
 
-אם תנאי החדרים לא מתקיים = "no match"
-אם תנאי החדרים מתקיים והשאר בסדר (או חסרים) = "match"
+DECISION RULES:
+- If ROOMS requirement fails = "no match"
+- If ROOMS passes but PURPOSE or PRICE fails = "no match" 
+- If ROOMS passes and others pass/default = "match"
 
-תשובה (רק "match" או "no match"):"""
+Answer (only "match" or "no match"):"""
         
         return prompt
 
