@@ -182,7 +182,7 @@ case "$1" in
     "pull-model")
         print_status "Pulling LLM model in Ollama..."
         check_docker_compose
-        model=${2:-"llama3.2:3b"}
+        model=${2:-"llama3.1:latest"}
         $COMPOSE_CMD exec $OLLAMA_SERVICE ollama pull "$model"
         print_success "Model $model pulled successfully!"
         ;;
@@ -223,7 +223,7 @@ case "$1" in
         echo "  shell          - Open shell in bot container"
         echo "  shell-ollama   - Open shell in ollama container"
         echo "  run-once       - Run scraper once"
-        echo "  pull-model [model] - Pull LLM model (default: llama3.2:3b)"
+        echo "  pull-model [model] - Pull LLM model (default: llama3.1:latest)"
         echo ""
         echo -e "${RED}Maintenance Commands:${NC}"
         echo "  clean          - Remove containers, volumes, and images"
@@ -234,7 +234,7 @@ case "$1" in
         echo "  $0 start       # Start the bot"
         echo "  $0 logs        # View logs"
         echo "  $0 test        # Test configuration"
-        echo "  $0 pull-model llama3.2:1b  # Pull smaller model"
+        echo "  $0 pull-model llama3.1:latest  # Pull smaller model"
         exit 1
         ;;
 esac

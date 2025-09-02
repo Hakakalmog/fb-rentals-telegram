@@ -97,7 +97,7 @@ def save_ollama_results(posts_with_analysis, group_url, scraped_file_path):
             'price': 'max 5,900₪ per month',
             'type': 'rental only (not sale)'
         },
-        'ollama_model': 'llama3.1:70b',
+        'ollama_model': 'llama3.1:latest',
         'posts_with_analysis': posts_with_analysis
     }
     

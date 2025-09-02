@@ -63,7 +63,7 @@ SCRAPE_INTERVAL_MINUTES=30
 MAX_POSTS_PER_SCRAPE=50
 
 # LLaMA Model Configuration
-OLLAMA_MODEL=llama3.2:3b
+OLLAMA_MODEL=llama3.1:latest
 OLLAMA_HOST=http://localhost:11434
 ```
 
@@ -84,7 +84,7 @@ curl -fsSL https://ollama.ai/install.sh | sh
 ollama serve
 
 # Pull the model (in another terminal)
-ollama pull llama3.2:3b
+ollama pull llama3.1:latest
 ```
 
 ## Installation Methods
@@ -213,7 +213,7 @@ crontab -e
 | Variable       | Description       | Default                |
 | -------------- | ----------------- | ---------------------- |
 | `OLLAMA_HOST`  | Ollama server URL | http://localhost:11434 |
-| `OLLAMA_MODEL` | LLM model name    | llama3.2:3b            |
+| `OLLAMA_MODEL` | LLM model name    | llama3.1:latest            |
 
 ## Project Structure
 
