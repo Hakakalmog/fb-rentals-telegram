@@ -61,8 +61,14 @@ The bot runs in a continuous loop that repeats every SCRAPE_INTERVAL_MINUTES (co
 | `MAX_POSTS_PER_SCRAPE` | Posts to scrape per group per cycle | `X` | X |
 | `MAX_PRICE` | Maximum acceptable rent price | `X` | X |
 | `OLLAMA_MODEL` | AI model for analysis | `llama3.1:latest` | llama3.1:latest |
+| `OLLAMA_HOST` | Ollama server URL | `http://localhost:11434` | http://localhost:11434 |
 | `TELEGRAM_BOT_TOKEN` | Bot token from @BotFather | `XXXXXX:ABC-DEF...` | - |
 | `TELEGRAM_CHAT_ID` | Your Telegram chat ID | `XXXXXXXXX` | - |
+| `DATABASE_PATH` | SQLite database file path | `./data/posts.db` | ./data/posts.db |
+| `LOG_LEVEL` | Logging level | `INFO` | INFO |
+| `LOG_FILE` | Log file path | `./logs/app.log` | ./logs/app.log |
+| `HEADLESS_MODE` | Run browser in headless mode | `true` | true |
+| `BROWSER_DATA_DIR` | Browser data directory | `./browser_data` | ./browser_data |
 
 ## 🏗️ System Components
 
