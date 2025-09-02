@@ -59,7 +59,7 @@ The bot runs in a continuous loop that repeats every SCRAPE_INTERVAL_MINUTES (co
 | `FB_GROUP_URLS` | Comma-separated Facebook group URLs | `https://facebook.com/groups/X,https://facebook.com/groups/Y` | - |
 | `SCRAPE_INTERVAL_MINUTES` | Minutes between scraping cycles | `X` | X |
 | `MAX_POSTS_PER_SCRAPE` | Posts to scrape per group per cycle | `X` | X |
-| `OLLAMA_MODEL` | AI model for analysis | `llama3.1:latest` | llama3.1:latest |
+| `OLLAMA_MODEL` | AI model for analysis | `llama3.1:latest` | **REQUIRED** |
 | `OLLAMA_HOST` | Ollama server URL | `http://localhost:11434` | http://localhost:11434 |
 | `TELEGRAM_BOT_TOKEN` | Bot token from @BotFather | `XXXXXX:ABC-DEF...` | - |
 | `TELEGRAM_CHAT_ID` | Your Telegram chat ID | `XXXXXXXXX` | - |

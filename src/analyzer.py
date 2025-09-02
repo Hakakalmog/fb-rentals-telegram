@@ -14,7 +14,9 @@ class ApartmentAnalyzer:
 
     def __init__(self, model_name: str = None, ollama_host: str = None):
         """Initialize the analyzer with Ollama configuration."""
-        self.model_name = model_name or os.getenv("OLLAMA_MODEL", "llama3.1:latest")
+        self.model_name = model_name or os.getenv("OLLAMA_MODEL")
+        if not self.model_name:
+            raise ValueError("OLLAMA_MODEL environment variable is required")
         self.ollama_host = ollama_host or os.getenv("OLLAMA_HOST", "http://localhost:11434")
         self.client = ollama.Client(host=self.ollama_host)
         
