@@ -68,17 +68,11 @@ class FacebookRentalScraper:
 
     # Filter configuration
     max_price = int(os.getenv("MAX_PRICE", 2000))
-    location_keywords = [
-      kw.strip()
-      for kw in os.getenv("LOCATION_KEYWORDS", "").split(",")
-      if kw.strip()
-    ]
 
     self.filter = LLaMAFilter(
       ollama_host=os.getenv("OLLAMA_HOST", "http://localhost:11434"),
       model_name=os.getenv("OLLAMA_MODEL", "llama3.2:3b"),
       max_price=max_price,
-      location_keywords=location_keywords,
     )
 
     # Telegram notifier

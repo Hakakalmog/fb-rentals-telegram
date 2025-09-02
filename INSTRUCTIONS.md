@@ -29,7 +29,6 @@ The bot runs in a continuous loop that repeats every SCRAPE_INTERVAL_MINUTES (co
    - Send new posts to local OLLAMA_MODEL
    - Analyze based on criteria:
      - Price (max from MAX_PRICE env var)
-     - Location (from LOCATION_KEYWORDS)
      - Room count, apartment type, etc.
    - Get "MATCH" or "NO MATCH" result
 
@@ -61,7 +60,6 @@ The bot runs in a continuous loop that repeats every SCRAPE_INTERVAL_MINUTES (co
 | `SCRAPE_INTERVAL_MINUTES` | Minutes between scraping cycles | `X` | X |
 | `MAX_POSTS_PER_SCRAPE` | Posts to scrape per group per cycle | `X` | X |
 | `MAX_PRICE` | Maximum acceptable rent price | `X` | X |
-| `LOCATION_KEYWORDS` | Preferred locations (comma-separated) | `Location1,Location2` | - |
 | `OLLAMA_MODEL` | AI model for analysis | `llama3.1:latest` | llama3.1:latest |
 | `TELEGRAM_BOT_TOKEN` | Bot token from @BotFather | `XXXXXX:ABC-DEF...` | - |
 | `TELEGRAM_CHAT_ID` | Your Telegram chat ID | `XXXXXXXXX` | - |
@@ -154,7 +152,6 @@ posts (
   link TEXT,
   group_url TEXT,
   analysis_result TEXT,  -- "match" or "no match"
-  price_extracted INTEGER,
   created_at TIMESTAMP,
   processed_at TIMESTAMP
 )
@@ -214,7 +211,7 @@ python tests/test_manual_group_scraper.py
 
 ### Adjusting AI Criteria
 1. Modify prompts in `src/analyzer.py`
-2. Update `MAX_PRICE` and `LOCATION_KEYWORDS`
+2. Update `MAX_PRICE`
 3. Test with `python tests/manual_analyzer_test.py`
 
 ### Changing Schedule

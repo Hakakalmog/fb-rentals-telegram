@@ -16,13 +16,11 @@ class LLaMAFilter:
     ollama_host: str = "http://localhost:11434",
     model_name: str = "llama3.2:3b",
     max_price: int = 2000,
-    location_keywords: list[str] = None,
   ):
     """Initialize filter with AI model configuration and filtering rules."""
     self.ollama_host = ollama_host.rstrip("/")
     self.model_name = model_name
     self.max_price = max_price
-    self.location_keywords = location_keywords or []
     self.session = requests.Session()
 
   def check_ollama_connection(self) -> bool:
@@ -106,32 +104,16 @@ class LLaMAFilter:
     result = {
       "passes_basic_filter": True,
       "reasons": [],
-      "price_extracted": None,
-      "locations_found": [],
     }
 
     # Extract and check price
     price = self.extract_price_from_content(full_text)
     if price:
-      result["price_extracted"] = price
       if price > self.max_price:
         result["passes_basic_filter"] = False
         result["reasons"].append(
           f"Price ${price} exceeds maximum ${self.max_price}"
         )
-
-    # Check for location keywords
-    locations_found = []
-    for location in self.location_keywords:
-      if location.lower() in full_text:
-        locations_found.append(location)
-
-    result["locations_found"] = locations_found
-
-    # If we have location keywords specified, require at least one match
-    if self.location_keywords and not locations_found:
-      result["passes_basic_filter"] = False
-      result["reasons"].append("No matching location keywords found")
 
     return result
 
@@ -142,16 +124,6 @@ class LLaMAFilter:
     content = post.get("content", "")
     author = post.get("author", "Unknown")
 
-    price_info = ""
-    if basic_filter_result["price_extracted"]:
-      price_info = f"Extracted price: ${basic_filter_result['price_extracted']}"
-
-    location_info = ""
-    if basic_filter_result["locations_found"]:
-      location_info = (
-        f"Locations found: {', '.join(basic_filter_result['locations_found'])}"
-      )
-
     prompt = f"""
 Analyze this Facebook rental post and determine if it's a legitimate rental listing.
 
@@ -159,8 +131,6 @@ POST CONTENT:
 {content}
 
 AUTHOR: {author}
-{price_info}
-{location_info}
 
 Please analyze this post and respond with a JSON object containing:
 1. "is_rental": boolean - true if this is a legitimate rental listing

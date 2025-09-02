@@ -60,7 +60,6 @@ FB_GROUP_URLS=https://www.facebook.com/groups/group1,https://www.facebook.com/gr
 
 # Filter Configuration
 MAX_PRICE=2000
-LOCATION_KEYWORDS=Manhattan,Brooklyn,Queens,Bronx
 
 # Scraping Configuration
 SCRAPE_INTERVAL_MINUTES=30
@@ -207,7 +206,6 @@ crontab -e
 | Variable            | Description                       | Default |
 | ------------------- | --------------------------------- | ------- |
 | `MAX_PRICE`         | Maximum rent price                | 2000    |
-| `LOCATION_KEYWORDS` | Comma-separated location keywords | Empty   |
 
 ### Scraping Settings
 
