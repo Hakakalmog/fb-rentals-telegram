@@ -128,7 +128,7 @@ async def manual_analyzer_test():
 
   # Initialize Ollama analyzer
   print("\n🧠 Initializing Ollama analyzer...")
-  model_name = os.getenv("OLLAMA_MODEL", "llama3.1:latest")
+  model_name = os.getenv("OLLAMA_MODEL", "llama3.1:70b")
   ollama_host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
   
   analyzer = ApartmentAnalyzer(model_name=model_name, ollama_host=ollama_host)

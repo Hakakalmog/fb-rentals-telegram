@@ -87,7 +87,7 @@ def save_ollama_results(posts_with_analysis, group_url, scraped_file_path):
             'price': 'max 5,900₪ per month',
             'type': 'rental only (not sale)'
         },
-        'ollama_model': 'llama3.1:latest',
+        'ollama_model': 'llama3.1:70b',
         'posts_with_analysis': posts_with_analysis
     }
     
@@ -283,7 +283,7 @@ async def test_manual_group_scraping(group_url: str):
             if len(post.get('content', '')) > 150:
                 print("    [Content truncated...]")
             
-            print(f"🤖 Analyzing with Ollama (llama3.1:latest)...")
+            print(f"🤖 Analyzing with Ollama (llama3.1:70b)...")
             result = analyzer.analyze_post(post)
             
             # Add analysis result to post data
@@ -374,7 +374,7 @@ if __name__ == "__main__":
     print("=" * 40)
     print("This test will:")
     print("• Scrape the first 3 posts from a Facebook group")
-    print("• Analyze each post with Ollama (llama3.1:latest) for apartment rental criteria")
+    print("• Analyze each post with Ollama (llama3.1:70b) for apartment rental criteria")
     print("• Show detailed results for each post")
     print()
     

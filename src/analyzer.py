@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 class ApartmentAnalyzer:
     """Analyzes apartment posts using Ollama LLM to match rental criteria."""
 
-    def __init__(self, model_name: str = "llama3.1:latest", ollama_host: str = "http://localhost:11434"):
+    def __init__(self, model_name: str = "llama3.1:70b", ollama_host: str = "http://localhost:11434"):
         """Initialize the analyzer with Ollama configuration."""
         self.model_name = model_name
         self.ollama_host = ollama_host
@@ -160,7 +160,7 @@ class ApartmentAnalyzer:
 
 
 # Example usage function
-def analyze_facebook_posts(posts: list[Dict[str, Any]], model_name: str = "llama3.1:latest") -> list[Dict[str, Any]]:
+def analyze_facebook_posts(posts: list[Dict[str, Any]], model_name: str = "llama3.1:70b") -> list[Dict[str, Any]]:
     """Convenience function to analyze Facebook posts."""
     analyzer = ApartmentAnalyzer(model_name=model_name)
     
