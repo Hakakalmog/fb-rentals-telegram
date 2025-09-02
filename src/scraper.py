@@ -207,12 +207,6 @@ class FacebookScraper:
       except (AttributeError, TypeError, ValueError):
         pass
 
-      # Extract price from content using regex (not used in output)
-      # price = self.extract_price_from_text(content)
-
-      # Extract location from content (not used in output)  
-      # location = self.extract_location_from_text(content)
-
       # Skip posts with no meaningful content (be less strict)
       if not content.strip():
         logger.debug("Skipping post with no content")
@@ -237,39 +231,6 @@ class FacebookScraper:
     except Exception as e:
       logger.error(f"Error extracting post data: {e}")
       return None
-
-  def extract_price_from_text(self, text: str) -> str | None:
-    """Extract price information from post text."""
-    # Common price patterns
-    price_patterns = [
-      r"\$(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)",
-      r"(\d{1,3}(?:,\d{3})*)\s*(?:dollars?|\$)",
-      r"(\d+)\s*k(?:\s*(?:per|/)\s*month)?",
-      r"(\d+)k/mo",
-    ]
-
-    for pattern in price_patterns:
-      match = re.search(pattern, text, re.IGNORECASE)
-      if match:
-        return match.group(0)
-
-    return None
-
-  def extract_location_from_text(self, text: str) -> str | None:
-    """Extract location information from post text."""
-    # Common location patterns
-    location_patterns = [
-      r"\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*),\s*([A-Z]{2})\b",  # City, State
-      r"\b(Manhattan|Brooklyn|Queens|Bronx|Staten Island)\b",
-      r"\b([A-Z][a-z]+\s+(?:Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd))\b",
-    ]
-
-    for pattern in location_patterns:
-      match = re.search(pattern, text, re.IGNORECASE)
-      if match:
-        return match.group(0)
-
-    return None
 
   async def scroll_and_load_posts(self, max_posts: int = 50):
     """Scroll the page to load more posts."""

@@ -28,12 +28,17 @@ class ApartmentAnalyzer:
 
 Check these criteria strictly:
 
-1. PURPOSE - Is it for rent?
+1. POST TYPE - Is this a rental listing or someone searching?
+   - If contains "מחפש", "מחפשים", "מחפשות", "מחפשת" (searching) = FAIL ✗
+   - If contains "להשכרה", "משכיר", "דירה להשכרה" (offering rental) = PASS ✓
+   - If no clear indication = PASS ✓ (default)
+
+2. PURPOSE - Is it for rent?
    - If mentions "להשכרה" (for rent) = PASS ✓
    - If mentions "למכירה" (for sale) = FAIL ✗
    - If no purpose mentioned = PASS ✓ (default)
 
-2. ROOMS - Is it 3+ rooms?
+3. ROOMS - Is it 3+ rooms?
    - 1 room (חדר אחד) = FAIL ✗
    - 1.5 rooms (חדר וחצי) = FAIL ✗  
    - 2 rooms (2 חדרים) = FAIL ✗
@@ -42,15 +47,16 @@ Check these criteria strictly:
    - 3.5+ rooms (3.5 חדרים ומעלה) = PASS ✓
    - No room count mentioned = FAIL ✗
 
-3. PRICE - Is it within budget (5900 or less)?
+4. PRICE - Is it within budget (5900 or less)?
    - 5900 or below = PASS ✓
    - Above 5900 = FAIL ✗
    - No price mentioned = PASS ✓ (default)
 
 DECISION RULES:
+- If POST TYPE fails (searching post) = "no match"
 - If ROOMS requirement fails = "no match"
 - If ROOMS passes but PURPOSE or PRICE fails = "no match" 
-- If ROOMS passes and others pass/default = "match"
+- If all criteria pass/default = "match"
 
 Answer (only "match" or "no match"):"""
         
