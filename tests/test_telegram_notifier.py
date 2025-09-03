@@ -61,14 +61,12 @@ async def test_telegram_notifier():
         
         # Send test message
         print("📤 Sending test message...")
-        test_message = f"""🧪 **Test Message**
-
-This is a simple test from the FB Rentals Bot!
-
-✅ Bot is working correctly
-🕒 Sent at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"""
+        success = await notifier.send_test_message()
         
-        await notifier.send_message(test_message)
+        if not success:
+            print("❌ Test message sending failed")
+            return False
+            
         print("✅ Test message sent successfully!")
         
         return True
