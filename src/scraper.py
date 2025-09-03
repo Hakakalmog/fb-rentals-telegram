@@ -452,11 +452,32 @@ async def scrape_facebook_groups(
   async with FacebookScraper(headless=headless) as scraper:
     await scraper.initialize_browser()
 
+    # Navigate to Facebook first to give time for manual login
+    logger.info("Navigating to Facebook for login verification...")
+    await scraper.page.goto("https://www.facebook.com", timeout=30000)
+    await scraper.page.wait_for_timeout(3000)  # Wait 3 seconds for page to load
+
     # Check if logged in
     is_logged_in = await scraper.check_login_status()
     if not is_logged_in:
       logger.error("Not logged into Facebook. Please log in manually first.")
-      return []
+      
+      # If not headless, give user time to log in manually
+      if not headless:
+        logger.info("Browser is visible - you can log in manually now.")
+        logger.info("Waiting 60 seconds for manual login...")
+        await scraper.page.wait_for_timeout(60000)  # Wait 60 seconds for manual login
+        
+        # Check login status again
+        is_logged_in = await scraper.check_login_status()
+        if not is_logged_in:
+          logger.error("Still not logged in after waiting. Aborting.")
+          return []
+        else:
+          logger.info("Login detected! Proceeding with scraping...")
+      else:
+        logger.error("Running in headless mode - cannot provide manual login option.")
+        return []
 
     for group_url in group_urls:
       posts = await scraper.scrape_group_posts(group_url, max_posts_per_group)
