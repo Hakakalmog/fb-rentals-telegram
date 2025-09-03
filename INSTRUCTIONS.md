@@ -50,73 +50,6 @@ The bot runs in a continuous loop that repeats every SCRAPE_INTERVAL_MINUTES (co
    - Then start over from step 1
 ```
 
-## 🔧 Configuration
-
-### Environment Variables
-
-| Variable | Description | Example | Default |
-|----------|-------------|---------|---------|
-| `FB_GROUP_URLS` | Comma-separated Facebook group URLs | `https://facebook.com/groups/X,https://facebook.com/groups/Y` | - |
-| `SCRAPE_INTERVAL_MINUTES` | Minutes between scraping cycles | `X` | X |
-| `MAX_POSTS_PER_SCRAPE` | Posts to scrape per group per cycle | `X` | X |
-| `OLLAMA_MODEL` | AI model for analysis | `llama3.1:latest` | **REQUIRED** |
-| `OLLAMA_HOST` | Ollama server URL | `http://localhost:11434` | http://localhost:11434 |
-| `TELEGRAM_BOT_TOKEN` | Bot token from @BotFather | `XXXXXX:ABC-DEF...` | - |
-| `TELEGRAM_CHAT_ID` | Your Telegram chat ID | `XXXXXXXXX` | - |
-| `DATABASE_PATH` | SQLite database file path | `./data/posts.db` | ./data/posts.db |
-| `LOG_LEVEL` | Logging level | `INFO` | INFO |
-| `LOG_FILE` | Log file path | `./logs/app.log` | ./logs/app.log |
-| `HEADLESS_MODE` | Run browser in headless mode | `true` | true |
-| `BROWSER_DATA_DIR` | Browser data directory | `./browser_data` | ./browser_data |
-
-## 🏗️ System Components
-
-### 1. Facebook Scraper (`src/scraper.py`)
-- Uses Playwright for browser automation
-- Handles login persistence and anti-detection
-- Extracts post content, metadata, and links
-- Manages rate limiting and error handling
-
-### 2. AI Analyzer (`src/analyzer.py`)
-- Connects to local Ollama server
-- Uses LLaMA model for intelligent post analysis
-- Evaluates posts against rental criteria
-- Returns binary "match" or "no match" decisions
-
-### 3. Database Manager (`src/database.py`)
-- SQLite database for post storage
-- Tracks processed posts to avoid duplicates
-- Stores analysis results and metadata
-- Handles schema migrations
-
-### 4. Telegram Notifier (`src/telegram_notifier.py`)
-- Sends formatted messages to Telegram
-- Includes post content, analysis, and links
-- Handles message formatting and error recovery
-
-### 5. Main Orchestrator (`src/main.py`)
-- Coordinates all components
-- Manages the main processing loop
-- Handles scheduling and error recovery
-- Provides CLI interface
-
-## 🚀 Running the Application
-
-### Prerequisites
-1. **Ollama** installed and running locally
-2. **LLaMA model** pulled (e.g., `ollama pull llama3.1:latest`)
-3. **Telegram bot** created via @BotFather
-4. **Facebook account** logged in (for scraping)
-
-### 🔐 First Run - Facebook Login
-
-**Important**: On your first run, the application will automatically open a Chrome browser window and prompt you to log into Facebook manually.
-
-```bash
-# For first-time setup, run in test mode to establish Facebook login
-python src/main.py test
-```
-
 **What happens during first login:**
 1. A **visible Chrome browser** window opens
 2. You'll be navigated to Facebook's login page
@@ -222,12 +155,6 @@ python tests/test_manual_group_scraper.py
 1. Update `SCRAPE_INTERVAL_MINUTES` in `.env`
 2. Restart application for changes to take effect
 
-## 📈 Performance Notes
-
-- **Processing time**: ~X-X minutes per group (MAX_POSTS_PER_SCRAPE posts)
-- **AI analysis**: ~X-X seconds per post
-- **Memory usage**: ~XMB-XMB during operation
-- **Storage**: ~XMB per X posts in database
 
 ## 🔒 Privacy & Ethics
 
