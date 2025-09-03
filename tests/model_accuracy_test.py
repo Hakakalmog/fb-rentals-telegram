@@ -57,6 +57,11 @@ class ModelAccuracyTester:
                 "expected": "match",
                 "category": "Clear Match - Abbreviated Rooms"
             },
+            {
+                "content": "להשכרה 2.5 חדרים בתל אביב 5400 שח",
+                "expected": "match",
+                "category": "Clear Match - Minimum Rooms (2.5)"
+            },
             
             # SHOULD NOT MATCH - Wrong Purpose (למכירה) - Expected: "no match"
             {
@@ -88,8 +93,8 @@ class ModelAccuracyTester:
             },
             {
                 "content": "דירת 2.5 חדרים להשכרה ברחובות 5500 שח",
-                "expected": "no match",
-                "category": "Too Few Rooms - 2.5 Rooms"
+                "expected": "match",
+                "category": "Clear Match - 2.5 Rooms"
             },
             
             # SHOULD NOT MATCH - Too Expensive - Expected: "no match"

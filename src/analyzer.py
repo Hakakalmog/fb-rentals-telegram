@@ -41,11 +41,11 @@ Check these criteria strictly:
    - If mentions "למכירה" (for sale) = FAIL ✗
    - If no purpose mentioned = PASS ✓ (default)
 
-3. ROOMS - Is it 3+ rooms?
+3. ROOMS - Is it 2.5+ rooms?
    - 1 room (חדר אחד) = FAIL ✗
    - 1.5 rooms (חדר וחצי) = FAIL ✗  
    - 2 rooms (2 חדרים) = FAIL ✗
-   - 2.5 rooms (2.5 חדרים) = FAIL ✗
+   - 2.5 rooms (2.5 חדרים) = PASS ✓
    - 3 rooms (3 חדרים) = PASS ✓
    - 3.5+ rooms (3.5 חדרים ומעלה) = PASS ✓
    - No room count mentioned = FAIL ✗
