@@ -93,9 +93,9 @@ class FacebookScraper:
       return False
 
   def generate_post_id(self, url: str, content: str, author: str) -> str:
-    """Generate a unique ID for a post."""
+    """Generate a unique ID for a post using author and content only."""
     content_hash = hashlib.md5(
-      f"{url}_{author}_{content[:100]}".encode(), usedforsecurity=False
+      f"{author}_{content}".encode(), usedforsecurity=False
     ).hexdigest()
     return content_hash
 
@@ -218,7 +218,7 @@ class FacebookScraper:
         return None
 
       # Generate unique post ID
-      post_id = self.generate_post_id(post_url, content[:50], author)
+      post_id = self.generate_post_id(post_url, content, author)
 
       return {
         "id": post_id,

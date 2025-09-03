@@ -11,13 +11,10 @@ __email__ = "your.email@example.com"
 
 from .analyzer import ApartmentAnalyzer
 from .db import DatabaseManager
-# Main components
-from .main import FacebookRentalScraper
 from .notifier import TelegramNotifier
 from .scraper import FacebookScraper, scrape_facebook_groups
 
 __all__ = [
-  "FacebookRentalScraper",
   "FacebookScraper",
   "scrape_facebook_groups",
   "ApartmentAnalyzer",

@@ -29,38 +29,37 @@ class DatabaseManager:
       # Create posts table
       cursor.execute(
         """
-  CREATE TABLE IF NOT EXISTS posts (
+        CREATE TABLE IF NOT EXISTS posts (
           id TEXT PRIMARY KEY,
-          url TEXT NOT NULL,
-          title TEXT NOT NULL,
           content TEXT NOT NULL,
-          price TEXT,
-          location TEXT,
           author TEXT,
-          timestamp DATETIME NOT NULL,
-          group_url TEXT NOT NULL,
+          timestamp TEXT NOT NULL,
+          url TEXT,
+          group_name TEXT,
+          group_url TEXT,
           scraped_at DATETIME DEFAULT CURRENT_TIMESTAMP,
           notified BOOLEAN DEFAULT FALSE,
+          analysis_result TEXT,
           relevance_score REAL DEFAULT 0.0
-  )
+        )
       """
       )
 
       # Create index for faster lookups
       cursor.execute(
         """
-  CREATE INDEX IF NOT EXISTS idx_posts_url ON posts(url)
-      """
+        CREATE INDEX IF NOT EXISTS idx_posts_id ON posts(id)
+        """
       )
       cursor.execute(
         """
-  CREATE INDEX IF NOT EXISTS idx_posts_timestamp ON posts(timestamp)
-      """
+        CREATE INDEX IF NOT EXISTS idx_posts_timestamp ON posts(timestamp)
+        """
       )
       cursor.execute(
         """
-  CREATE INDEX IF NOT EXISTS idx_posts_notified ON posts(notified)
-      """
+        CREATE INDEX IF NOT EXISTS idx_posts_notified ON posts(notified)
+        """
       )
 
       conn.commit()
@@ -81,19 +80,18 @@ class DatabaseManager:
         cursor.execute(
           """
           INSERT OR REPLACE INTO posts
-          (id, url, title, content, price, location, author, timestamp, group_url, relevance_score)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  """,
+          (id, content, author, timestamp, url, group_name, group_url, analysis_result, relevance_score)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+          """,
           (
             post_data["id"],
-            post_data["url"],
-            post_data["title"],
             post_data["content"],
-            post_data.get("price"),
-            post_data.get("location"),
             post_data.get("author"),
             post_data["timestamp"],
-            post_data["group_url"],
+            post_data.get("url"),
+            post_data.get("group_name"),
+            post_data.get("group_url"),
+            post_data.get("analysis_result"),
             post_data.get("relevance_score", 0.0),
           ),
         )
@@ -109,11 +107,11 @@ class DatabaseManager:
       cursor = conn.cursor()
       cursor.execute(
         """
-  SELECT id, url, title, content, price, location, author, timestamp, group_url, relevance_score
-  FROM posts
-  WHERE notified = FALSE
-  ORDER BY timestamp DESC
-      """
+        SELECT id, content, author, timestamp, url, group_name, group_url, analysis_result, relevance_score
+        FROM posts
+        WHERE notified = FALSE
+        ORDER BY timestamp DESC
+        """
       )
 
       posts = []
@@ -121,15 +119,14 @@ class DatabaseManager:
         posts.append(
           {
             "id": row[0],
-            "url": row[1],
-            "title": row[2],
-            "content": row[3],
-            "price": row[4],
-            "location": row[5],
-            "author": row[6],
-            "timestamp": row[7],
-            "group_url": row[8],
-            "relevance_score": row[9],
+            "content": row[1],
+            "author": row[2],
+            "timestamp": row[3],
+            "url": row[4],
+            "group_name": row[5],
+            "group_url": row[6],
+            "analysis_result": row[7],
+            "relevance_score": row[8],
           }
         )
       return posts
@@ -169,11 +166,11 @@ class DatabaseManager:
       cursor = conn.cursor()
       cursor.execute(
         """
-  SELECT id, url, title, content, price, location, author, timestamp, group_url, relevance_score
-  FROM posts
-  WHERE scraped_at > datetime('now', '-' || ? || ' hours')
-  ORDER BY timestamp DESC
-      """,
+        SELECT id, content, author, timestamp, url, group_name, group_url, analysis_result, relevance_score
+        FROM posts
+        WHERE scraped_at > datetime('now', '-' || ? || ' hours')
+        ORDER BY timestamp DESC
+        """,
         (hours,),
       )
 
@@ -182,15 +179,14 @@ class DatabaseManager:
         posts.append(
           {
             "id": row[0],
-            "url": row[1],
-            "title": row[2],
-            "content": row[3],
-            "price": row[4],
-            "location": row[5],
-            "author": row[6],
-            "timestamp": row[7],
-            "group_url": row[8],
-            "relevance_score": row[9],
+            "content": row[1],
+            "author": row[2],
+            "timestamp": row[3],
+            "url": row[4],
+            "group_name": row[5],
+            "group_url": row[6],
+            "analysis_result": row[7],
+            "relevance_score": row[8],
           }
         )
       return posts
