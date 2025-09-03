@@ -30,7 +30,10 @@ Check these criteria strictly:
 
 1. POST TYPE - Is this a rental listing or someone searching?
    - If contains "מחפש", "מחפשים", "מחפשות", "מחפשת" (searching) = FAIL ✗
-   - If contains "להשכרה", "משכיר", "דירה להשכרה" (offering rental) = PASS ✓
+   - If contains "שותפים", "שותפות", "שותפה", "שותף" (any roommate/partner reference) = FAIL ✗
+   - If contains "דרוש", "דרושה", "דרושים", "דרושות" (needed/wanted) = FAIL ✗
+   - If contains "עם שותף", "עם שותפה", "עם שותפים", "עם שותפות" (with partners) = FAIL ✗
+   - If contains "להשכרה", "משכיר", "דירה להשכרה", "שכירות" (offering rental) = PASS ✓
    - If no clear indication = PASS ✓ (default)
 
 2. PURPOSE - Is it for rent?
@@ -53,10 +56,12 @@ Check these criteria strictly:
    - No price mentioned = PASS ✓ (default)
 
 DECISION RULES:
-- If POST TYPE fails (searching post) = "no match"
+- If POST TYPE fails (searching, roommate/partner posts) = "no match"
 - If ROOMS requirement fails = "no match"
 - If ROOMS passes but PURPOSE or PRICE fails = "no match" 
 - If all criteria pass/default = "match"
+
+IMPORTANT: Any mention of roommates/partners (שותף/שותפה/שותפים/שותפות) automatically = "no match"
 
 Answer (only "match" or "no match"):"""
         

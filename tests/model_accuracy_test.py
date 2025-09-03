@@ -109,6 +109,60 @@ class ModelAccuracyTester:
                 "category": "Too Expensive - Just Over Edge"
             },
             
+            # SHOULD NOT MATCH - People Searching (not offering) - Expected: "no match"
+            {
+                "content": "מחפש דירה 3 חדרים בתל אביב עד 5500 שח",
+                "expected": "no match",
+                "category": "Person Searching - Male Singular"
+            },
+            {
+                "content": "מחפשת דירת 4 חדרים ברמת גן למשפחה",
+                "expected": "no match",
+                "category": "Person Searching - Female Singular"
+            },
+            {
+                "content": "מחפשים דירה 3 חדרים באזור המרכז",
+                "expected": "no match",
+                "category": "People Searching - Male Plural"
+            },
+            {
+                "content": "מחפשות דירת 3-4 חדרים בפתח תקווה",
+                "expected": "no match",
+                "category": "People Searching - Female Plural"
+            },
+            
+            # SHOULD NOT MATCH - Roommate/Partner Posts - Expected: "no match"
+            {
+                "content": "מחפש שותף לדירה 3 חדרים בתל אביב",
+                "expected": "no match",
+                "category": "Roommate Search - Male Singular"
+            },
+            {
+                "content": "מחפשת שותפה לדירת 4 חדרים ברמת גן 5500 שח",
+                "expected": "no match",
+                "category": "Roommate Search - Female Singular"
+            },
+            {
+                "content": "דירת 3 חדרים בפתח תקווה, מחפשים שותפים נוספים",
+                "expected": "no match",
+                "category": "Roommate Search - Male Plural"
+            },
+            {
+                "content": "שותפות לדירה 4 חדרים בראשון לציון 5200 שח",
+                "expected": "no match",
+                "category": "Roommate Partnership - Female Plural"
+            },
+            {
+                "content": "להשכרה דירת 3 חדרים עם שותפים קיימים",
+                "expected": "no match",
+                "category": "Rental with Existing Roommates"
+            },
+            {
+                "content": "דירה 4 חד׳ ברמת גן דרושה שותפה נוספת",
+                "expected": "no match",
+                "category": "Looking for Additional Roommate"
+            },
+            
             # EDGE CASES - Ambiguous or Complex
             {
                 "content": "דירה בתל אביב 3 חדרים 5500 שח",
