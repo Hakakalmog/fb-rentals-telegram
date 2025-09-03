@@ -12,13 +12,38 @@ logger = logging.getLogger(__name__)
 class ApartmentAnalyzer:
     """Analyzes apartment posts using Ollama LLM to match rental criteria."""
 
-    def __init__(self, model_name: str = None, ollama_host: str = None):
-        """Initialize the analyzer with Ollama configuration."""
+    def __init__(self, model_name: str = None, ollama_host: str = None, exclude_words: list = None):
+        """Initialize the analyzer with Ollama configuration and optional exclude words."""
         self.model_name = model_name or os.getenv("OLLAMA_MODEL")
         if not self.model_name:
             raise ValueError("OLLAMA_MODEL environment variable is required")
         self.ollama_host = ollama_host or os.getenv("OLLAMA_HOST", "http://localhost:11434")
         self.client = ollama.Client(host=self.ollama_host)
+        
+        # Set up exclude words from parameter or environment variable
+        self.exclude_words = exclude_words or []
+        env_exclude_words = os.getenv("ANALYZER_EXCLUDE_WORDS")
+        if env_exclude_words:
+            # Parse comma-separated exclude words from environment
+            env_words = [word.strip() for word in env_exclude_words.split(",") if word.strip()]
+            self.exclude_words.extend(env_words)
+        
+        # Remove duplicates (no need to convert to lowercase for Hebrew)
+        self.exclude_words = list(set(self.exclude_words))
+        
+        if self.exclude_words:
+            logger.info(f"Initialized with exclude words: {self.exclude_words}")
+    
+    def _contains_exclude_words(self, content: str) -> bool:
+        """Check if content contains any exclude words."""
+        if not self.exclude_words:
+            return False
+            
+        for word in self.exclude_words:
+            if word in content:
+                logger.info(f"Post excluded due to word: '{word}'")
+                return True
+        return False
         
     def create_analysis_prompt(self, post_content: str, author: str) -> str:
         """Create an English prompt for apartment analysis with Hebrew content."""
@@ -76,10 +101,15 @@ Answer (only "match" or "no match"):"""
             if not content.strip():
                 logger.warning("Empty post content")
                 return "no match"
+            
+            # Pre-filter: Check for exclude words before sending to LLM
+            if self._contains_exclude_words(content):
+                logger.info(f"Post pre-filtered due to exclude words: {content[:50]}...")
+                return "no match"
                 
             prompt = self.create_analysis_prompt(content, author)
             
-            logger.info(f"Analyzing post: {content[:50]}...")
+            logger.info(f"Analyzing post with LLM: {content[:50]}...")
             
             # Call Ollama synchronously
             response = self.client.chat(
@@ -186,9 +216,9 @@ Answer (only "match" or "no match"):"""
 
 
 # Example usage function
-def analyze_facebook_posts(posts: list[Dict[str, Any]], model_name: str = None) -> list[Dict[str, Any]]:
+def analyze_facebook_posts(posts: list[Dict[str, Any]], model_name: str = None, exclude_words: list = None) -> list[Dict[str, Any]]:
     """Convenience function to analyze Facebook posts."""
-    analyzer = ApartmentAnalyzer(model_name=model_name)
+    analyzer = ApartmentAnalyzer(model_name=model_name, exclude_words=exclude_words)
     
     # Test connection first
     if not analyzer.test_ollama_connection():

@@ -257,6 +257,28 @@ class ModelAccuracyTester:
                 "expected": "no match",
                 "category": "Too Few Rooms - No Price/Purpose"
             },
+            
+            # EXCLUDE WORDS PRE-FILTERING TESTS - These should be filtered before reaching LLM
+            {
+                "content": "מחפש דירת 3 חדרים בתל אביב עד 5500 שח",
+                "expected": "no match",
+                "category": "Pre-filtered - Search Word (מחפש)"
+            },
+            {
+                "content": "דירת 4 חדרים למכירה ברמת גן 2000000 שח",
+                "expected": "no match",
+                "category": "Pre-filtered - Sale Word (למכירה)"
+            },
+            {
+                "content": "להשכרה 3 חדרים מחפש שותף בפתח תקווה",
+                "expected": "no match",
+                "category": "Pre-filtered - Roommate Word (שותף)"
+            },
+            {
+                "content": "דירת 3.5 חדרים דרושה להשכרה באזור המרכז",
+                "expected": "no match",
+                "category": "Pre-filtered - Wanted Word (דרושה)"
+            },
         ]
     
     def run_single_test(self, test_case):
@@ -368,12 +390,13 @@ class ModelAccuracyTester:
         return accuracy, results
 
     def _save_results_to_files(self, accuracy, results, by_category, failed_tests):
-        """Save test results to JSON and text files in test_outputs folder."""
+        """Save test results to JSON and text files in test_outputs/model_accuracy folder."""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         model_name = self.analyzer.model_name.replace(":", "_").replace("/", "_")
         
-        # Create output directory
-        output_dir = os.path.join(os.path.dirname(__file__), "..", "test_outputs")
+        # Create output directory structure: test_outputs/model_accuracy/
+        base_output_dir = os.path.join(os.path.dirname(__file__), "..", "test_outputs")
+        output_dir = os.path.join(base_output_dir, "model_accuracy")
         os.makedirs(output_dir, exist_ok=True)
         
         # Prepare data for JSON
