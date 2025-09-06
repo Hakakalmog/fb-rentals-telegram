@@ -79,9 +79,6 @@ class TelegramNotifier:
       if group_name:
         message_parts.append(f"👥 *Group:* {group_name}")
 
-      # Separator
-      message_parts.append("➖" * 20)
-
       return "\n\n".join(message_parts)
 
     except Exception as e:
