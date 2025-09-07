@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Facebook Rental Bot - Professional Implementation
+"""Facebook Rental Bot - Professional Implementation.
 
 This application monitors Facebook rental groups, analyzes posts with AI,
 and sends matching apartments to Telegram.
@@ -162,7 +161,7 @@ class FacebookRentalBot:
         return True
 
     async def verify_facebook_login(self, scraper: FacebookScraper) -> bool:
-        """Verify Facebook login using proven method from manual_login_test.py"""
+        """Verify Facebook login using proven method from manual_login_test.py."""
         try:
             self.logger.info("🌐 Navigating to Facebook for login verification...")
             await scraper.page.goto("https://www.facebook.com", timeout=30000)

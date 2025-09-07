@@ -13,19 +13,21 @@ from datetime import datetime
 
 from dotenv import load_dotenv
 
+# Add the src directory to Python path (before local imports)
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+
 # Load environment variables
 load_dotenv()
 
-# Add the src directory to Python path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
-
-from analyzer import ApartmentAnalyzer
+# Now import local modules
+from analyzer import ApartmentAnalyzer  # noqa: E402
 
 
 class ModelAccuracyTester:
     """Test the model accuracy with various apartment rental scenarios."""
 
     def __init__(self):
+        """Initialize the accuracy tester with analyzer and test cases."""
         self.analyzer = ApartmentAnalyzer()
         self.test_cases = self._create_test_cases()
 

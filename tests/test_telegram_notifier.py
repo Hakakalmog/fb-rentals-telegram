@@ -7,13 +7,14 @@ import sys
 
 from dotenv import load_dotenv
 
+# Add the src directory to Python path (before local imports)
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+
 # Load environment variables
 load_dotenv()
 
-# Add the src directory to Python path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
-
-from notifier import TelegramNotifier
+# Now import local modules
+from notifier import TelegramNotifier  # noqa: E402
 
 
 async def test_telegram_notifier():

@@ -60,7 +60,7 @@ class TelegramNotifier:
           dt = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
           formatted_time = dt.strftime("%Y-%m-%d %H:%M")
           message_parts.append(f"⏰ *Posted:* {formatted_time}")
-        except:
+        except (ValueError, AttributeError):
           message_parts.append(f"⏰ *Posted:* {timestamp[:19]}")
 
       # Content

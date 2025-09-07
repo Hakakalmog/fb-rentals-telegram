@@ -19,14 +19,15 @@ from datetime import datetime
 
 from dotenv import load_dotenv
 
+# Add the src directory to Python path (before local imports)
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+
 # Load environment variables
 load_dotenv()
 
-# Add the src directory to Python path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
-
-from analyzer import ApartmentAnalyzer
-from scraper import FacebookScraper
+# Now import local modules
+from analyzer import ApartmentAnalyzer  # noqa: E402
+from scraper import FacebookScraper  # noqa: E402
 
 
 class FacebookTestScraper:
