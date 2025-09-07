@@ -208,6 +208,16 @@ crontab -e
 | `MAX_POSTS_PER_SCRAPE`    | Max posts to scrape per group   | 50      |
 | `HEADLESS_MODE`           | Run browser in headless mode    | true    |
 
+### Scheduled Downtime
+
+| Variable                    | Description                      | Default |
+| --------------------------- | -------------------------------- | ------- |
+| `DOWNTIME_ENABLED`          | Enable scheduled downtime        | false   |
+| `DOWNTIME_START_HOUR`       | Hour to start downtime (0-23)    | 2       |
+| `DOWNTIME_DURATION_HOURS`   | Duration in hours                | 4       |
+
+**Example**: Set `DOWNTIME_ENABLED=true`, `DOWNTIME_START_HOUR=22`, `DOWNTIME_DURATION_HOURS=6` for quiet hours from 22:00-04:00.
+
 ### LLM Settings
 
 | Variable       | Description       | Default                |
