@@ -31,26 +31,26 @@ class ModelAccuracyTester:
     def _create_test_cases(self):
         """Create comprehensive test cases with expected results."""
         return [
-            # SHOULD MATCH (3+ rooms, for rent, ≤5900 NIS) - Expected: "match"
+            # SHOULD MATCH (2.5-3.5 rooms, for rent, ≤5900 NIS) - Expected: "match"
             {
                 "content": "להשכרה דירת 3 חדרים בתל אביב, מחיר 5500 שקל",
                 "expected": "match",
                 "category": "Clear Match - Exact Requirements"
             },
             {
-                "content": "דירה להשכרה 4 חדרים רמת גן 5000 ש״ח",
+                "content": "דירה להשכרה 3.5 חדרים רמת גן 5000 ש״ח",
                 "expected": "match", 
-                "category": "Clear Match - Above Minimum Rooms"
+                "category": "Clear Match - Maximum Rooms"
             },
             {
-                "content": "להשכרה 3.5 חדרים פתח תקווה 5900 שקל בדיוק",
+                "content": "להשכרה 2.5 חדרים פתח תקווה 5900 שקל בדיוק",
                 "expected": "match",
-                "category": "Clear Match - Edge Price"
+                "category": "Clear Match - Minimum Rooms, Edge Price"
             },
             {
-                "content": "דירת 5 חדרים להשכרה ברחובות 4800 שח",
+                "content": "דירת 3 חדרים להשכרה ברחובות 4800 שח",
                 "expected": "match",
-                "category": "Clear Match - Many Rooms, Low Price"
+                "category": "Clear Match - Mid-Range Rooms, Low Price"
             },
             {
                 "content": "להשכרה דירת 3 חד׳ בראשון לציון 5200 ש״ח משופצת",
@@ -61,6 +61,23 @@ class ModelAccuracyTester:
                 "content": "להשכרה 2.5 חדרים בתל אביב 5400 שח",
                 "expected": "match",
                 "category": "Clear Match - Minimum Rooms (2.5)"
+            },
+            
+            # SHOULD NOT MATCH - Too Many Rooms (4+) - Expected: "no match"
+            {
+                "content": "להשכרה דירת 4 חדרים בתל אביב, מחיר 5500 שקל",
+                "expected": "no match",
+                "category": "Too Many Rooms - 4 Rooms"
+            },
+            {
+                "content": "דירה להשכרה 5 חדרים רמת גן 5000 ש״ח",
+                "expected": "no match",
+                "category": "Too Many Rooms - 5 Rooms"
+            },
+            {
+                "content": "להשכרה 4.5 חדרים פתח תקווה 4800 שקל",
+                "expected": "no match",
+                "category": "Too Many Rooms - 4.5 Rooms"
             },
             
             # SHOULD NOT MATCH - Wrong Purpose (למכירה) - Expected: "no match"
@@ -104,7 +121,7 @@ class ModelAccuracyTester:
                 "category": "Too Expensive - Over Budget"
             },
             {
-                "content": "דירה להשכרה 4 חדרים רמת גן 7000 ש״ח",
+                "content": "דירה להשכרה 3 חדרים רמת גן 7000 ש״ח",
                 "expected": "no match",
                 "category": "Too Expensive - Way Over Budget"
             },
@@ -121,7 +138,7 @@ class ModelAccuracyTester:
                 "category": "Person Searching - Male Singular"
             },
             {
-                "content": "מחפשת דירת 4 חדרים ברמת גן למשפחה",
+                "content": "מחפשת דירת 3 חדרים ברמת גן למשפחה",
                 "expected": "no match",
                 "category": "Person Searching - Female Singular"
             },
@@ -131,7 +148,7 @@ class ModelAccuracyTester:
                 "category": "People Searching - Male Plural"
             },
             {
-                "content": "מחפשות דירת 3-4 חדרים בפתח תקווה",
+                "content": "מחפשות דירת 2.5-3 חדרים בפתח תקווה",
                 "expected": "no match",
                 "category": "People Searching - Female Plural"
             },
@@ -143,7 +160,7 @@ class ModelAccuracyTester:
                 "category": "Roommate Search - Male Singular"
             },
             {
-                "content": "מחפשת שותפה לדירת 4 חדרים ברמת גן 5500 שח",
+                "content": "מחפשת שותפה לדירת 3 חדרים ברמת גן 5500 שח",
                 "expected": "no match",
                 "category": "Roommate Search - Female Singular"
             },
@@ -153,7 +170,7 @@ class ModelAccuracyTester:
                 "category": "Roommate Search - Male Plural"
             },
             {
-                "content": "שותפות לדירה 4 חדרים בראשון לציון 5200 שח",
+                "content": "שותפות לדירה 3 חדרים בראשון לציון 5200 שח",
                 "expected": "no match",
                 "category": "Roommate Partnership - Female Plural"
             },
@@ -163,7 +180,7 @@ class ModelAccuracyTester:
                 "category": "Rental with Existing Roommates"
             },
             {
-                "content": "דירה 4 חד׳ ברמת גן דרושה שותפה נוספת",
+                "content": "דירה 3 חד׳ ברמת גן דרושה שותפה נוספת",
                 "expected": "no match",
                 "category": "Looking for Additional Roommate"
             },
@@ -197,7 +214,7 @@ class ModelAccuracyTester:
                 "category": "With Emojis"
             },
             {
-                "content": "להשכרה: דירת 4 חדרים ברחובות. מחיר: 5200 שקל. מיידי!",
+                "content": "להשכרה: דירת 3 חדרים ברחובות. מחיר: 5200 שקל. מיידי!",
                 "expected": "match",
                 "category": "Formatted with Punctuation"
             },
@@ -239,8 +256,8 @@ class ModelAccuracyTester:
             },
             {
                 "content": "דירה 4 חדרים משופצת ברמת גן",
-                "expected": "match",
-                "category": "No Price, No Purpose - Should Match (4 rooms)"
+                "expected": "no match",
+                "category": "No Price, No Purpose - Should NOT Match (4 rooms - too many)"
             },
             {
                 "content": "דירת 3.5 חדרים בפתח תקווה קומה שנייה",
