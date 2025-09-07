@@ -6,10 +6,11 @@ the model's performance on different types of apartment rental posts
 in Hebrew, including edge cases and borderline scenarios.
 """
 
-import sys
-import os
 import json
+import os
+import sys
 from datetime import datetime
+
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -23,11 +24,11 @@ from analyzer import ApartmentAnalyzer
 
 class ModelAccuracyTester:
     """Test the model accuracy with various apartment rental scenarios."""
-    
+
     def __init__(self):
         self.analyzer = ApartmentAnalyzer()
         self.test_cases = self._create_test_cases()
-        
+
     def _create_test_cases(self):
         """Create comprehensive test cases with expected results."""
         return [
@@ -39,7 +40,7 @@ class ModelAccuracyTester:
             },
             {
                 "content": "דירה להשכרה 3.5 חדרים רמת גן 5000 ש״ח",
-                "expected": "match", 
+                "expected": "match",
                 "category": "Clear Match - Maximum Rooms"
             },
             {
@@ -62,7 +63,7 @@ class ModelAccuracyTester:
                 "expected": "match",
                 "category": "Clear Match - Minimum Rooms (2.5)"
             },
-            
+
             # SHOULD NOT MATCH - Too Many Rooms (4+) - Expected: "no match"
             {
                 "content": "להשכרה דירת 4 חדרים בתל אביב, מחיר 5500 שקל",
@@ -79,7 +80,7 @@ class ModelAccuracyTester:
                 "expected": "no match",
                 "category": "Too Many Rooms - 4.5 Rooms"
             },
-            
+
             # SHOULD NOT MATCH - Wrong Purpose (למכירה) - Expected: "no match"
             {
                 "content": "למכירה דירת 3 חדרים בתל אביב, מחיר 5500 שקל",
@@ -91,7 +92,7 @@ class ModelAccuracyTester:
                 "expected": "no match",
                 "category": "Sale Not Rent"
             },
-            
+
             # SHOULD NOT MATCH - Too Few Rooms - Expected: "no match"
             {
                 "content": "להשכרה דירת חדר אחד בתל אביב, מחיר 4500 שקל",
@@ -113,7 +114,7 @@ class ModelAccuracyTester:
                 "expected": "match",
                 "category": "Clear Match - 2.5 Rooms"
             },
-            
+
             # SHOULD NOT MATCH - Too Expensive - Expected: "no match"
             {
                 "content": "להשכרה דירת 3 חדרים בתל אביב, מחיר 6500 שקל",
@@ -130,7 +131,7 @@ class ModelAccuracyTester:
                 "expected": "no match",
                 "category": "Too Expensive - Just Over Edge"
             },
-            
+
             # SHOULD NOT MATCH - People Searching (not offering) - Expected: "no match"
             {
                 "content": "מחפש דירה 3 חדרים בתל אביב עד 5500 שח",
@@ -152,7 +153,7 @@ class ModelAccuracyTester:
                 "expected": "no match",
                 "category": "People Searching - Female Plural"
             },
-            
+
             # SHOULD NOT MATCH - Roommate/Partner Posts - Expected: "no match"
             {
                 "content": "מחפש שותף לדירה 3 חדרים בתל אביב",
@@ -184,7 +185,7 @@ class ModelAccuracyTester:
                 "expected": "no match",
                 "category": "Looking for Additional Roommate"
             },
-            
+
             # EDGE CASES - Ambiguous or Complex
             {
                 "content": "דירה בתל אביב 3 חדרים 5500 שח",
@@ -206,7 +207,7 @@ class ModelAccuracyTester:
                 "expected": "match",
                 "category": "Price Plus Additional Costs - Base Price OK"
             },
-            
+
             # REAL-WORLD VARIATIONS
             {
                 "content": "🏠 דירה להשכרה 3 חד׳ ברמת גן 💰 5400 שח",
@@ -228,7 +229,7 @@ class ModelAccuracyTester:
                 "expected": "match",
                 "category": "Many Abbreviations"
             },
-            
+
             # TRICKY CASES
             {
                 "content": "דירה להשכרה 3 חדרים גדולים בנתניה 5900 שקל",
@@ -240,14 +241,14 @@ class ModelAccuracyTester:
                 "expected": "match",
                 "category": "Additional Spaces"
             },
-            
+
             # NUMERIC VARIATIONS
             {
                 "content": "להשכרה דירת שלושה חדרים בתל אביב 5500 שקל",
                 "expected": "match",
                 "category": "Written Numbers"
             },
-            
+
             # NEW DEFAULT BEHAVIOR TESTS
             {
                 "content": "דירת 3 חדרים מעולה בתל אביב",
@@ -274,7 +275,7 @@ class ModelAccuracyTester:
                 "expected": "no match",
                 "category": "Too Few Rooms - No Price/Purpose"
             },
-            
+
             # EXCLUDE WORDS PRE-FILTERING TESTS - These should be filtered before reaching LLM
             {
                 "content": "מחפש דירת 3 חדרים בתל אביב עד 5500 שח",
@@ -296,7 +297,7 @@ class ModelAccuracyTester:
                 "expected": "no match",
                 "category": "Pre-filtered - Wanted Word (דרושה)"
             },
-            
+
             # RENTAL RELEVANCE TESTS - Posts not related to rental housing
             {
                 "content": "מכירה דחופה! אייפון 14 במצב חדש 3000 שקל",
@@ -333,7 +334,7 @@ class ModelAccuracyTester:
                 "expected": "no match",
                 "category": "Rental Relevance - Furniture Sale (Not Housing)"
             },
-            
+
             # POSITIVE RENTAL RELEVANCE TESTS - Posts clearly about housing/rentals
             {
                 "content": "דירה בת 3 חדרים בתל אביב להשכרה 5500 שח",
@@ -360,7 +361,7 @@ class ModelAccuracyTester:
                 "expected": "match",
                 "category": "Rental Relevance - Clear Housing with דירות"
             },
-            
+
             # EDGE CASES FOR RENTAL RELEVANCE - Posts that might be ambiguous
             {
                 "content": "משרד 3 חדרים להשכרה בתל אביב 5500 שח",
@@ -377,7 +378,7 @@ class ModelAccuracyTester:
                 "expected": "no match",
                 "category": "Rental Relevance - Storage Space (Not Residential)"
             },
-            
+
             # ADDITIONAL RENTAL RELEVANCE EDGE CASES
             {
                 "content": "מכירת אופניים במצב חדש 1500 שקל בלבד",
@@ -386,7 +387,7 @@ class ModelAccuracyTester:
             },
             {
                 "content": "הרצאה על השקעות נדלן ביום רביעי הקרוב",
-                "expected": "no match", 
+                "expected": "no match",
                 "category": "Rental Relevance - Real Estate Lecture (Not Rental)"
             },
             {
@@ -406,18 +407,18 @@ class ModelAccuracyTester:
             },
             {
                 "content": "זמן תפוס? בואו לעבוד במשרדנו - משכורת נאה",
-                "expected": "no match", 
+                "expected": "no match",
                 "category": "Rental Relevance - Job Offer (Not Housing)"
             },
         ]
-    
+
     def run_single_test(self, test_case):
         """Run a single test case and return results."""
         post = {"content": test_case["content"], "author": "Test User"}
         result = self.analyzer.analyze_post(post)
-        
+
         is_correct = result == test_case["expected"]
-        
+
         return {
             "content": test_case["content"][:60] + "...",
             "category": test_case["category"],
@@ -425,48 +426,48 @@ class ModelAccuracyTester:
             "actual": result,
             "correct": is_correct
         }
-    
+
     def run_rental_relevance_tests(self):
         """Run only the rental relevance tests to focus on the new feature."""
         print(f"🔍 Testing Rental Relevance Feature: {self.analyzer.model_name}")
         print("=" * 80)
-        
+
         # Test connection first
         if not self.analyzer.test_ollama_connection():
             print("❌ Cannot connect to Ollama. Make sure it's running.")
             return
-        
+
         print(f"✅ Connected to Ollama with model: {self.analyzer.model_name}")
         print()
-        
+
         # Filter for only rental relevance tests
         relevance_tests = [
-            test for test in self.test_cases 
+            test for test in self.test_cases
             if "Rental Relevance" in test["category"]
         ]
-        
+
         results = []
         correct_count = 0
         total_count = len(relevance_tests)
-        
+
         print(f"Running {total_count} rental relevance tests...")
         print("-" * 80)
-        
+
         for i, test_case in enumerate(relevance_tests, 1):
             print(f"Test {i:2d}/{total_count}: {test_case['category']}")
-            
+
             result = self.run_single_test(test_case)
             results.append(result)
-            
+
             if result["correct"]:
                 correct_count += 1
                 print(f"    ✅ {result['expected']} -> {result['actual']}")
             else:
                 print(f"    ❌ Expected: {result['expected']}, Got: {result['actual']}")
                 print(f"       Content: {result['content']}")
-            
+
             print()
-        
+
         # Results summary
         accuracy = (correct_count / total_count) * 100
         print("=" * 80)
@@ -476,7 +477,7 @@ class ModelAccuracyTester:
         print(f"Correct: {correct_count}")
         print(f"Wrong: {total_count - correct_count}")
         print(f"Relevance Accuracy: {accuracy:.1f}%")
-        
+
         # Failed tests details
         failed_tests = [r for r in results if not r["correct"]]
         if failed_tests:
@@ -489,43 +490,43 @@ class ModelAccuracyTester:
                 print()
         else:
             print("\n🎉 All rental relevance tests passed!")
-        
+
         return accuracy, results
 
     def run_all_tests(self):
         """Run all test cases and provide detailed results."""
         print(f"🧪 Testing Model Accuracy: {self.analyzer.model_name}")
         print("=" * 80)
-        
+
         # Test connection first
         if not self.analyzer.test_ollama_connection():
             print("❌ Cannot connect to Ollama. Make sure it's running.")
             return
-        
+
         print(f"✅ Connected to Ollama with model: {self.analyzer.model_name}")
         print()
-        
+
         results = []
         correct_count = 0
         total_count = len(self.test_cases)
-        
+
         # Group results by category
         by_category = {}
-        
+
         print("Running tests...")
         print("-" * 80)
-        
+
         for i, test_case in enumerate(self.test_cases, 1):
             print(f"Test {i:2d}/{total_count}: {test_case['category']}")
-            
+
             result = self.run_single_test(test_case)
             results.append(result)
-            
+
             # Track by category
             category = result["category"]
             if category not in by_category:
                 by_category[category] = {"correct": 0, "total": 0}
-            
+
             by_category[category]["total"] += 1
             if result["correct"]:
                 by_category[category]["correct"] += 1
@@ -534,9 +535,9 @@ class ModelAccuracyTester:
             else:
                 print(f"    ❌ Expected: {result['expected']}, Got: {result['actual']}")
                 print(f"       Content: {result['content']}")
-            
+
             print()
-        
+
         # Overall Results
         accuracy = (correct_count / total_count) * 100
         print("=" * 80)
@@ -547,16 +548,16 @@ class ModelAccuracyTester:
         print(f"Wrong: {total_count - correct_count}")
         print(f"Accuracy: {accuracy:.1f}%")
         print()
-        
+
         # Category Breakdown
         print("📋 CATEGORY BREAKDOWN")
         print("-" * 80)
         for category, stats in by_category.items():
             cat_accuracy = (stats["correct"] / stats["total"]) * 100
             print(f"{category:35} {stats['correct']:2d}/{stats['total']:2d} ({cat_accuracy:5.1f}%)")
-        
+
         print()
-        
+
         # Failed Tests Details
         failed_tests = [r for r in results if not r["correct"]]
         if failed_tests:
@@ -567,7 +568,7 @@ class ModelAccuracyTester:
                 print(f"Content: {test['content']}")
                 print(f"Expected: {test['expected']} | Got: {test['actual']}")
                 print()
-        
+
         # Recommendations
         print("💡 RECOMMENDATIONS")
         print("-" * 80)
@@ -579,22 +580,22 @@ class ModelAccuracyTester:
             print("⚠️  Moderate performance. Consider fine-tuning prompts.")
         else:
             print("🚨 Poor performance. Model may need significant adjustments.")
-        
+
         # Save results to files
         self._save_results_to_files(accuracy, results, by_category, failed_tests)
-        
+
         return accuracy, results
 
     def _save_results_to_files(self, accuracy, results, by_category, failed_tests):
         """Save test results to JSON and text files in test_outputs/model_accuracy folder."""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         model_name = self.analyzer.model_name.replace(":", "_").replace("/", "_")
-        
+
         # Create output directory structure: test_outputs/model_accuracy/
         base_output_dir = os.path.join(os.path.dirname(__file__), "..", "test_outputs")
         output_dir = os.path.join(base_output_dir, "model_accuracy")
         os.makedirs(output_dir, exist_ok=True)
-        
+
         # Prepare data for JSON
         test_data = {
             "timestamp": datetime.now().isoformat(),
@@ -613,32 +614,32 @@ class ModelAccuracyTester:
             "detailed_results": results,
             "failed_tests": failed_tests
         }
-        
+
         # Save JSON file
         json_filename = f"accuracy_test_{model_name}_{timestamp}.json"
         json_path = os.path.join(output_dir, json_filename)
         with open(json_path, 'w', encoding='utf-8') as f:
             json.dump(test_data, f, ensure_ascii=False, indent=2)
-        
+
         # Save summary text file
         txt_filename = f"accuracy_summary_{model_name}_{timestamp}.txt"
         txt_path = os.path.join(output_dir, txt_filename)
         with open(txt_path, 'w', encoding='utf-8') as f:
-            f.write(f"Model Accuracy Test Results\n")
-            f.write(f"==========================\n\n")
+            f.write("Model Accuracy Test Results\n")
+            f.write("==========================\n\n")
             f.write(f"Model: {self.analyzer.model_name}\n")
             f.write(f"Test Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
             f.write(f"Total Tests: {len(self.test_cases)}\n")
             f.write(f"Correct: {sum(1 for r in results if r['correct'])}\n")
             f.write(f"Wrong: {len(self.test_cases) - sum(1 for r in results if r['correct'])}\n")
             f.write(f"ACCURACY: {accuracy:.1f}%\n\n")
-            
+
             f.write("Category Breakdown:\n")
             f.write("-" * 50 + "\n")
             for category, stats in by_category.items():
                 cat_accuracy = (stats["correct"] / stats["total"]) * 100
                 f.write(f"{category:35} {stats['correct']:2d}/{stats['total']:2d} ({cat_accuracy:5.1f}%)\n")
-            
+
             if failed_tests:
                 f.write(f"\nFailed Tests ({len(failed_tests)}):\n")
                 f.write("-" * 50 + "\n")
@@ -646,8 +647,8 @@ class ModelAccuracyTester:
                     f.write(f"{i}. {test['category']}\n")
                     f.write(f"   Content: {test['content']}\n")
                     f.write(f"   Expected: {test['expected']} | Got: {test['actual']}\n\n")
-        
-        print(f"\n📄 Results saved to:")
+
+        print("\n📄 Results saved to:")
         print(f"   JSON: {json_path}")
         print(f"   Summary: {txt_path}")
         print(f"\n🎯 FINAL ACCURACY: {accuracy:.1f}%")
@@ -656,17 +657,17 @@ class ModelAccuracyTester:
 def main():
     """Main function to run the accuracy test."""
     import argparse
-    
+
     parser = argparse.ArgumentParser(description="Test model accuracy for apartment analysis")
     parser.add_argument(
-        "--rental-relevance-only", 
+        "--rental-relevance-only",
         action="store_true",
         help="Run only rental relevance tests"
     )
     args = parser.parse_args()
-    
+
     tester = ModelAccuracyTester()
-    
+
     if args.rental_relevance_only:
         accuracy, results = tester.run_rental_relevance_tests()
         return accuracy >= 90  # Higher threshold for relevance tests

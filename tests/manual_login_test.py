@@ -57,7 +57,7 @@ async def manual_login_test():
     # Create scraper instance
     async with FacebookScraper() as scraper:
       await scraper.initialize_browser()
-      
+
       # Navigate to Facebook immediately so user sees the login page
       print("🌐 Navigating to Facebook login page...")
       await scraper.page.goto("https://www.facebook.com", timeout=30000)

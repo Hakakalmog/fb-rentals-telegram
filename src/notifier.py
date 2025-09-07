@@ -75,7 +75,7 @@ class TelegramNotifier:
       group_name = post.get('group_name')
       if not group_name and group_url:
         group_name = self.extract_group_name_from_url(group_url)
-      
+
       if group_name:
         message_parts.append(f"👥 *Group:* {group_name}")
 
@@ -157,10 +157,10 @@ class TelegramNotifier:
 
     message = "🏠 New Rental Post\n\n"
     message += f"Author: {author}\n"
-    
+
     if timestamp:
       message += f"Posted: {timestamp[:19]}\n"
-    
+
     message += f"Content: {content}\n"
 
     if url:

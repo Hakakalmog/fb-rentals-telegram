@@ -2,7 +2,6 @@ import asyncio
 import hashlib
 import logging
 import os
-import re
 from datetime import datetime
 from typing import Any
 
@@ -268,13 +267,13 @@ class FacebookScraper:
       # Try multiple selectors for group name
       group_name_selectors = [
         "h1[data-testid='group-name']",
-        "h1[dir='auto']", 
+        "h1[dir='auto']",
         "h1 span",
         "[data-testid='group-name'] span",
         "h1",
         ".x1heor9g .x1qlqyl8 .x1pd3egz .x1a2a7pz span"
       ]
-      
+
       for selector in group_name_selectors:
         try:
           element = await self.page.query_selector(selector)
@@ -287,7 +286,7 @@ class FacebookScraper:
         except Exception as e:
           logger.debug(f"Failed to get group name with selector '{selector}': {e}")
           continue
-      
+
       # Fallback: try to extract from page title
       try:
         title = await self.page.title()
@@ -298,10 +297,10 @@ class FacebookScraper:
             return group_name
       except Exception as e:
         logger.debug(f"Failed to extract group name from title: {e}")
-      
+
       logger.warning("Could not extract group name, using fallback")
       return "Unknown Group"
-      
+
     except Exception as e:
       logger.error(f"Error extracting group name: {e}")
       return "Unknown Group"
@@ -461,13 +460,13 @@ async def scrape_facebook_groups(
     is_logged_in = await scraper.check_login_status()
     if not is_logged_in:
       logger.error("Not logged into Facebook. Please log in manually first.")
-      
+
       # If not headless, give user time to log in manually
       if not headless:
         logger.info("Browser is visible - you can log in manually now.")
         logger.info("Waiting 60 seconds for manual login...")
         await scraper.page.wait_for_timeout(60000)  # Wait 60 seconds for manual login
-        
+
         # Check login status again
         is_logged_in = await scraper.check_login_status()
         if not is_logged_in:

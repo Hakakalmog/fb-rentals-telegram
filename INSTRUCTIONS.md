@@ -2,53 +2,66 @@
 
 ## Overview
 
-This application automatically monitors Facebook rental groups, analyzes posts using AI, and sends matching apartments to Telegram. It's designed to help you find suitable rental properties without manually checking multiple Facebook groups.
+This application automatically monitors Facebook rental groups, analyzes posts
+using AI, and sends matching apartments to Telegram. It's designed to help you
+find suitable rental properties without manually checking multiple Facebook
+groups.
 
 ## 📋 Application Flow
 
 ### Main Process Cycle
 
-The bot runs in a continuous loop that repeats every SCRAPE_INTERVAL_MINUTES (configurable in .env):
+The bot runs in a continuous loop that repeats every SCRAPE_INTERVAL_MINUTES
+(configurable in .env):
 
 **1. Load Facebook Groups List**
-   - From FB_GROUP_URLS environment variable
-   - Or from hardcoded list in code
+
+- From FB_GROUP_URLS environment variable
+- Or from hardcoded list in code
 
 **2. For Each Facebook Group:**
 
-   **2.1 Scrape Latest Posts**
-   - Scrape MAX_POSTS_PER_SCRAPE posts using Playwright browser automation
-   - Extract: content, author, timestamp, link
+**2.1 Scrape Latest Posts**
 
-   **2.2 Check Database for New Posts**
-   - Compare with existing posts in SQLite database
-   - Filter out posts already processed
-   - Save only NEW posts to database
+- Scrape MAX_POSTS_PER_SCRAPE posts using Playwright browser automation
+- Extract: content, author, timestamp, link
 
-   **2.3 AI Analysis with Ollama**
-   - Send new posts to local OLLAMA_MODEL
-   - Analyze based on criteria:
-     - Price (within budget range)
-     - Room count (minimum requirements), apartment type, etc.
-   - Get "MATCH" or "NO MATCH" result
+**2.2 Check Database for New Posts**
 
-   **2.4 Send Matching Posts to Telegram**
-   - Only posts marked as "MATCH"
-   - Include: content, price, location, link
-   - Send to TELEGRAM_CHAT_ID
+- Compare with existing posts in SQLite database
+- Filter out posts already processed
+- Save only NEW posts to database
 
-   **2.5 Update Database**
-   - Mark posts as "match" or "no match"
-   - Store analysis results
-   - Update processing timestamp
+**2.3 AI Analysis with Ollama**
+
+- Send new posts to local OLLAMA_MODEL
+- Analyze based on criteria:
+  - Price (within budget range)
+  - Room count (minimum requirements), apartment type, etc.
+- Get "MATCH" or "NO MATCH" result
+
+**2.4 Send Matching Posts to Telegram**
+
+- Only posts marked as "MATCH"
+- Include: content, price, location, link
+- Send to TELEGRAM_CHAT_ID
+
+**2.5 Update Database**
+
+- Mark posts as "match" or "no match"
+- Store analysis results
+- Update processing timestamp
 
 **3. Move to Next Group**
-   - Repeat steps 2.1-2.5 for next Facebook group
+
+- Repeat steps 2.1-2.5 for next Facebook group
 
 **4. Wait for Next Cycle**
-   - Sleep for SCRAPE_INTERVAL_MINUTES
-   - Then start over from step 1
-```
+
+- Sleep for SCRAPE_INTERVAL_MINUTES
+- Then start over from step 1
+
+````
 
 **What happens during first login:**
 1. A **visible Chrome browser** window opens
@@ -76,11 +89,12 @@ python src/main.py test
 python src/main.py
 # or
 python src/main.py continuous
-```
+````
 
 ## 📊 Data Flow
 
 ### Database Schema
+
 ```sql
 posts (
   id INTEGER PRIMARY KEY,
@@ -96,6 +110,7 @@ posts (
 ```
 
 ### Processing States
+
 - **New**: Post scraped, saved to DB, not yet analyzed
 - **Analyzed**: Post analyzed by AI, result stored
 - **Notified**: Matching post sent to Telegram
@@ -104,12 +119,14 @@ posts (
 ## 🔍 Monitoring & Logs
 
 ### Log Levels
+
 - **INFO**: Normal operation, scraping progress
 - **WARNING**: Non-critical issues, retries
 - **ERROR**: Failed operations, missing configuration
 - **DEBUG**: Detailed debugging information
 
 ### Key Log Messages
+
 - `"Starting scrape cycle for X groups"`
 - `"Found N new posts in group"`
 - `"AI analysis complete: X matches, Y non-matches"`
@@ -143,18 +160,20 @@ python tests/test_manual_group_scraper.py
 ## 🎯 Customization
 
 ### Adding New Groups
+
 1. Add URLs to `FB_GROUP_URLS` in `.env`
 2. Restart the application
 3. Monitor logs for successful scraping
 
 ### Adjusting AI Criteria
+
 1. Modify prompts in `src/analyzer.py` (price limit is set in the prompt)
 2. Test with `python tests/manual_analyzer_test.py`
 
 ### Changing Schedule
+
 1. Update `SCRAPE_INTERVAL_MINUTES` in `.env`
 2. Restart application for changes to take effect
-
 
 ## 🔒 Privacy & Ethics
 

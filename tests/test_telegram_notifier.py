@@ -2,9 +2,9 @@
 """Simple test to verify Telegram notifier functionality."""
 
 import asyncio
-import sys
 import os
-from datetime import datetime
+import sys
+
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -20,16 +20,16 @@ async def test_telegram_notifier():
     """Test that the Telegram notifier can send a message."""
     print("🔔 Testing Telegram Notifier")
     print("=" * 40)
-    
+
     # Get configuration from environment
     bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
     chat_id = os.getenv("TELEGRAM_CHAT_ID")
-    
+
     # Check configuration
     if not bot_token:
         print("❌ TELEGRAM_BOT_TOKEN not found in .env file")
         return False
-    
+
     if not chat_id or chat_id == "your_chat_id_here":
         print("❌ TELEGRAM_CHAT_ID not configured in .env file")
         print("💡 Update TELEGRAM_CHAT_ID in .env with your actual chat ID")
@@ -40,37 +40,37 @@ async def test_telegram_notifier():
         print("   3. Send a simple test message")
         print("   4. Confirm message delivery")
         return False
-    
+
     print(f"🤖 Bot token: {bot_token[:10]}...")
     print(f"💬 Chat ID: {chat_id}")
-    
+
     try:
         # Initialize notifier
         notifier = TelegramNotifier(bot_token, chat_id)
         print("✅ TelegramNotifier initialized")
-        
+
         # Test connection
         print("🔌 Testing connection...")
         connection_ok = await notifier.test_connection()
-        
+
         if not connection_ok:
             print("❌ Connection test failed")
             return False
-        
+
         print("✅ Connection successful")
-        
+
         # Send test message
         print("📤 Sending test message...")
         success = await notifier.send_test_message()
-        
+
         if not success:
             print("❌ Test message sending failed")
             return False
-            
+
         print("✅ Test message sent successfully!")
-        
+
         return True
-        
+
     except Exception as e:
         print(f"❌ Error: {e}")
         return False

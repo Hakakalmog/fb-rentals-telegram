@@ -210,20 +210,21 @@ crontab -e
 
 ### Scheduled Downtime
 
-| Variable                    | Description                      | Default |
-| --------------------------- | -------------------------------- | ------- |
-| `DOWNTIME_ENABLED`          | Enable scheduled downtime        | false   |
-| `DOWNTIME_START_HOUR`       | Hour to start downtime (0-23)    | 2       |
-| `DOWNTIME_DURATION_HOURS`   | Duration in hours                | 4       |
+| Variable                  | Description                   | Default |
+| ------------------------- | ----------------------------- | ------- |
+| `DOWNTIME_ENABLED`        | Enable scheduled downtime     | false   |
+| `DOWNTIME_START_HOUR`     | Hour to start downtime (0-23) | 2       |
+| `DOWNTIME_DURATION_HOURS` | Duration in hours             | 4       |
 
-**Example**: Set `DOWNTIME_ENABLED=true`, `DOWNTIME_START_HOUR=22`, `DOWNTIME_DURATION_HOURS=6` for quiet hours from 22:00-04:00.
+**Example**: Set `DOWNTIME_ENABLED=true`, `DOWNTIME_START_HOUR=22`,
+`DOWNTIME_DURATION_HOURS=6` for quiet hours from 22:00-04:00.
 
 ### LLM Settings
 
 | Variable       | Description       | Default                |
 | -------------- | ----------------- | ---------------------- |
 | `OLLAMA_HOST`  | Ollama server URL | http://localhost:11434 |
-| `OLLAMA_MODEL` | LLM model name    | llama3.1:latest            |
+| `OLLAMA_MODEL` | LLM model name    | llama3.1:latest        |
 
 ## Project Structure
 
