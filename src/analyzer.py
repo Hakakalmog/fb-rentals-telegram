@@ -53,6 +53,13 @@ class ApartmentAnalyzer:
 
 Check these criteria strictly:
 
+0. RENTAL RELEVANCE - Is this post actually related to residential rental listings?
+   - If clearly about residential rental: "דירה", "דירות", "בית", "יחידת מגורים", "מקום מגורים" = PASS ✓
+   - If about commercial/business spaces: "משרד" (office), "מחסן" (warehouse), "חנות" (shop), "מסעדה", "אולם" = FAIL ✗
+   - If about non-rental topics: jobs, services, item sales, events, personal matters = FAIL ✗
+   - If unclear but contains "להשכרה" with room count = PASS ✓ (default to residential)
+   - If completely unrelated to rental housing = FAIL ✗
+
 1. POST TYPE - Is this a rental listing or someone searching?
    - If contains "מחפש", "מחפשים", "מחפשות", "מחפשת" (searching) = FAIL ✗
    - If contains "שותפים", "שותפות", "שותפה", "שותף" (any roommate/partner reference) = FAIL ✗
@@ -82,12 +89,14 @@ Check these criteria strictly:
    - No price mentioned = PASS ✓ (default)
 
 DECISION RULES:
+- If RENTAL RELEVANCE fails (post not about rental/housing) = "no match"
 - If POST TYPE fails (searching, roommate/partner posts) = "no match"
 - If ROOMS requirement fails = "no match"
 - If ROOMS passes but PURPOSE or PRICE fails = "no match" 
 - If all criteria pass/default = "match"
 
 IMPORTANT: Any mention of roommates/partners (שותף/שותפה/שותפים/שותפות) automatically = "no match"
+IMPORTANT: Posts not related to rental housing automatically = "no match"
 
 Answer (only "match" or "no match"):"""
         

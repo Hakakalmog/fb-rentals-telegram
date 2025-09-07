@@ -296,6 +296,119 @@ class ModelAccuracyTester:
                 "expected": "no match",
                 "category": "Pre-filtered - Wanted Word (דרושה)"
             },
+            
+            # RENTAL RELEVANCE TESTS - Posts not related to rental housing
+            {
+                "content": "מכירה דחופה! אייפון 14 במצב חדש 3000 שקל",
+                "expected": "no match",
+                "category": "Rental Relevance - Phone Sale (Not Housing)"
+            },
+            {
+                "content": "מחפש עבודה בהיטק תל אביב, נסיון של 3 שנים",
+                "expected": "no match",
+                "category": "Rental Relevance - Job Search (Not Housing)"
+            },
+            {
+                "content": "מכירה רכב טויוטה 2018, מחיר 85000 שקל",
+                "expected": "no match",
+                "category": "Rental Relevance - Car Sale (Not Housing)"
+            },
+            {
+                "content": "שירות תיקון מחשבים ולפטופים במחיר זול",
+                "expected": "no match",
+                "category": "Rental Relevance - Computer Service (Not Housing)"
+            },
+            {
+                "content": "אירוע יום הולדת לילדים - קלאון ואנימציה",
+                "expected": "no match",
+                "category": "Rental Relevance - Event Service (Not Housing)"
+            },
+            {
+                "content": "מורה פרטי למתמטיקה - שיעורים בבית",
+                "expected": "no match",
+                "category": "Rental Relevance - Tutoring Service (Not Housing)"
+            },
+            {
+                "content": "מכירה ספה ושולחן סלון במצב מצוין",
+                "expected": "no match",
+                "category": "Rental Relevance - Furniture Sale (Not Housing)"
+            },
+            
+            # POSITIVE RENTAL RELEVANCE TESTS - Posts clearly about housing/rentals
+            {
+                "content": "דירה בת 3 חדרים בתל אביב להשכרה 5500 שח",
+                "expected": "match",
+                "category": "Rental Relevance - Clear Housing with דירה"
+            },
+            {
+                "content": "להשכרה מקום מגורים נעים בצפון תל אביב 3 חדרים",
+                "expected": "match",
+                "category": "Rental Relevance - Clear Housing with מקום מגורים"
+            },
+            {
+                "content": "בית פרטי 3 חדרים להשכרה באזור המרכז 5000 שח",
+                "expected": "match",
+                "category": "Rental Relevance - Clear Housing with בית"
+            },
+            {
+                "content": "יחידת מגורים 3 חדרים במודיעין 5200 שקל",
+                "expected": "match",
+                "category": "Rental Relevance - Clear Housing with יחידת מגורים"
+            },
+            {
+                "content": "דירות חדשות להשכרה באזור רמת גן 3 חד׳ 5400",
+                "expected": "match",
+                "category": "Rental Relevance - Clear Housing with דירות"
+            },
+            
+            # EDGE CASES FOR RENTAL RELEVANCE - Posts that might be ambiguous
+            {
+                "content": "משרד 3 חדרים להשכרה בתל אביב 5500 שח",
+                "expected": "no match",
+                "category": "Rental Relevance - Office Space (Not Residential)"
+            },
+            {
+                "content": "חנות למכירה 3 חדרים במרכז העיר 5000 שח",
+                "expected": "no match",
+                "category": "Rental Relevance - Commercial Space (Not Residential)"
+            },
+            {
+                "content": "מחסן 3 חדרים להשכרה באזור התעשייה",
+                "expected": "no match",
+                "category": "Rental Relevance - Storage Space (Not Residential)"
+            },
+            
+            # ADDITIONAL RENTAL RELEVANCE EDGE CASES
+            {
+                "content": "מכירת אופניים במצב חדש 1500 שקל בלבד",
+                "expected": "no match",
+                "category": "Rental Relevance - Bike Sale (Not Housing)"
+            },
+            {
+                "content": "הרצאה על השקעות נדלן ביום רביעי הקרוב",
+                "expected": "no match", 
+                "category": "Rental Relevance - Real Estate Lecture (Not Rental)"
+            },
+            {
+                "content": "גינה קהילתית מחפשת מתנדבים לעבודות תחזוקה",
+                "expected": "no match",
+                "category": "Rental Relevance - Community Garden (Not Housing)"
+            },
+            {
+                "content": "קורס בישול איטלקי במטבח ביתי 3 מפגשים",
+                "expected": "no match",
+                "category": "Rental Relevance - Cooking Class (Not Housing)"
+            },
+            {
+                "content": "מכירת ציוד ספורט - כדורגל, כדורעף, טניס",
+                "expected": "no match",
+                "category": "Rental Relevance - Sports Equipment (Not Housing)"
+            },
+            {
+                "content": "זמן תפוס? בואו לעבוד במשרדנו - משכורת נאה",
+                "expected": "no match", 
+                "category": "Rental Relevance - Job Offer (Not Housing)"
+            },
         ]
     
     def run_single_test(self, test_case):
@@ -313,6 +426,72 @@ class ModelAccuracyTester:
             "correct": is_correct
         }
     
+    def run_rental_relevance_tests(self):
+        """Run only the rental relevance tests to focus on the new feature."""
+        print(f"🔍 Testing Rental Relevance Feature: {self.analyzer.model_name}")
+        print("=" * 80)
+        
+        # Test connection first
+        if not self.analyzer.test_ollama_connection():
+            print("❌ Cannot connect to Ollama. Make sure it's running.")
+            return
+        
+        print(f"✅ Connected to Ollama with model: {self.analyzer.model_name}")
+        print()
+        
+        # Filter for only rental relevance tests
+        relevance_tests = [
+            test for test in self.test_cases 
+            if "Rental Relevance" in test["category"]
+        ]
+        
+        results = []
+        correct_count = 0
+        total_count = len(relevance_tests)
+        
+        print(f"Running {total_count} rental relevance tests...")
+        print("-" * 80)
+        
+        for i, test_case in enumerate(relevance_tests, 1):
+            print(f"Test {i:2d}/{total_count}: {test_case['category']}")
+            
+            result = self.run_single_test(test_case)
+            results.append(result)
+            
+            if result["correct"]:
+                correct_count += 1
+                print(f"    ✅ {result['expected']} -> {result['actual']}")
+            else:
+                print(f"    ❌ Expected: {result['expected']}, Got: {result['actual']}")
+                print(f"       Content: {result['content']}")
+            
+            print()
+        
+        # Results summary
+        accuracy = (correct_count / total_count) * 100
+        print("=" * 80)
+        print("📊 RENTAL RELEVANCE RESULTS")
+        print("=" * 80)
+        print(f"Total Relevance Tests: {total_count}")
+        print(f"Correct: {correct_count}")
+        print(f"Wrong: {total_count - correct_count}")
+        print(f"Relevance Accuracy: {accuracy:.1f}%")
+        
+        # Failed tests details
+        failed_tests = [r for r in results if not r["correct"]]
+        if failed_tests:
+            print("\n❌ FAILED RENTAL RELEVANCE TESTS")
+            print("-" * 80)
+            for test in failed_tests:
+                print(f"Category: {test['category']}")
+                print(f"Content: {test['content']}")
+                print(f"Expected: {test['expected']} | Got: {test['actual']}")
+                print()
+        else:
+            print("\n🎉 All rental relevance tests passed!")
+        
+        return accuracy, results
+
     def run_all_tests(self):
         """Run all test cases and provide detailed results."""
         print(f"🧪 Testing Model Accuracy: {self.analyzer.model_name}")
@@ -476,10 +655,24 @@ class ModelAccuracyTester:
 
 def main():
     """Main function to run the accuracy test."""
-    tester = ModelAccuracyTester()
-    accuracy, results = tester.run_all_tests()
+    import argparse
     
-    return accuracy >= 80  # Return success if accuracy is 80% or higher
+    parser = argparse.ArgumentParser(description="Test model accuracy for apartment analysis")
+    parser.add_argument(
+        "--rental-relevance-only", 
+        action="store_true",
+        help="Run only rental relevance tests"
+    )
+    args = parser.parse_args()
+    
+    tester = ModelAccuracyTester()
+    
+    if args.rental_relevance_only:
+        accuracy, results = tester.run_rental_relevance_tests()
+        return accuracy >= 90  # Higher threshold for relevance tests
+    else:
+        accuracy, results = tester.run_all_tests()
+        return accuracy >= 80  # Return success if accuracy is 80% or higher
 
 
 if __name__ == "__main__":
