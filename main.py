@@ -285,13 +285,13 @@ class FacebookRentalBot:
         try:
             # Step 1: Scrape new posts from all groups
             new_posts = await self.scrape_all_groups()
-            
-            # Only send cycle separator if there are new posts
-            if new_posts and self.notifier:
-                await self.notifier.send_cycle_separator()
 
             # Step 2: AI Analysis with Ollama
             matching_posts = self.analyze_posts(new_posts)
+
+            # Only send cycle separator if there are matching posts
+            if matching_posts and self.notifier:
+                await self.notifier.send_cycle_separator()
 
             # Step 3: Send matching posts to Telegram
             notifications_sent = await self.send_notifications(matching_posts)
@@ -301,8 +301,8 @@ class FacebookRentalBot:
 
             # Log summary
             self.logger.info(f"✅ Cycle complete in {duration:.1f}s - "
-                           f"Scraped: {len(new_posts)}, Matches: {len(matching_posts)}, "
-                           f"Sent: {notifications_sent}")
+                            f"Scraped: {len(new_posts)}, Matches: {len(matching_posts)}, "
+                            f"Sent: {notifications_sent}")
 
             return {
                 "scraped": len(new_posts),
