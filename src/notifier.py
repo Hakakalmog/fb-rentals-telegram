@@ -236,7 +236,7 @@ class TelegramNotifier:
   async def send_cycle_separator(self) -> bool:
     """Send a simple emoji separator to distinguish new scraping cycles."""
     try:
-      separator = "🏠═════════════════🏠"
+      separator = "🏠════════════════🏠"
 
       await self.bot.send_message(chat_id=self.chat_id, text=separator)
 
