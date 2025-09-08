@@ -233,6 +233,20 @@ class TelegramNotifier:
     logger.info(f"Successfully sent {success_count}/{len(posts)} notifications")
     return success_count
 
+  async def send_cycle_separator(self) -> bool:
+    """Send a simple emoji separator to distinguish new scraping cycles."""
+    try:
+      separator = "🏠 ═══════════════════════════════════════ �"
+
+      await self.bot.send_message(chat_id=self.chat_id, text=separator)
+
+      logger.debug("Cycle separator sent successfully")
+      return True
+
+    except Exception as e:
+      logger.error(f"Failed to send cycle separator: {e}")
+      return False
+
   async def send_test_message(self) -> bool:
     """Send a test message to verify the bot is working."""
     try:

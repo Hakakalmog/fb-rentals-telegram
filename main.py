@@ -283,6 +283,10 @@ class FacebookRentalBot:
         self.logger.info(f"🚀 Starting scrape cycle at {start_time.strftime('%H:%M:%S')}")
 
         try:
+            # Send cycle separator emoji to Telegram
+            if self.notifier:
+                await self.notifier.send_cycle_separator()
+            
             # Step 1: Scrape new posts from all groups
             new_posts = await self.scrape_all_groups()
 
