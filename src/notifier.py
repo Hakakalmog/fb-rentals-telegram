@@ -46,22 +46,9 @@ class TelegramNotifier:
       # Build message
       message_parts = []
 
-      # Title/Header with emoji
-      message_parts.append("🏠 *New Rental Post*")
-
       # Author
       if author:
         message_parts.append(f"👤 *Author:* {html.escape(author)}")
-
-      # Timestamp
-      if timestamp:
-        try:
-          from datetime import datetime
-          dt = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
-          formatted_time = dt.strftime("%Y-%m-%d %H:%M")
-          message_parts.append(f"⏰ *Posted:* {formatted_time}")
-        except (ValueError, AttributeError):
-          message_parts.append(f"⏰ *Posted:* {timestamp[:19]}")
 
       # Content
       if content:
@@ -153,14 +140,8 @@ class TelegramNotifier:
     content = post.get("content", "")[:800]  # Increased limit since no other fields
     author = post.get("author", "Unknown")
     url = post.get("url", "")
-    timestamp = post.get("timestamp", "")
 
-    message = "🏠 New Rental Post\n\n"
-    message += f"Author: {author}\n"
-
-    if timestamp:
-      message += f"Posted: {timestamp[:19]}\n"
-
+    message = f"Author: {author}\n"
     message += f"Content: {content}\n"
 
     if url:
