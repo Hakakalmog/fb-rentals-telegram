@@ -1,426 +1,324 @@
 # Facebook Rentals Telegram Bot
 
-A Python application that automatically scrapes rental posts from Facebook
-groups, filters them using a local LLaMA model (via Ollama), and sends relevant
-results as Telegram messages.
+A smart Python application that automatically scrapes rental posts from Facebook groups, filters them using AI (Ollama/LLaMA), and sends only the most relevant rental opportunities directly to your Telegram. Say goodbye to endless scrolling through Facebook groups - let the bot do the work while you focus on finding your perfect home! 🏠
 
-## Features
+## 🚀 Features
 
-- 🏠 **Facebook Group Scraping**: Automatically scrapes posts from specified
-  Facebook rental groups using Playwright
-- 🤖 **AI Filtering**: Uses local LLaMA models via Ollama to intelligently
-  filter relevant rental posts
-- 📱 **Telegram Notifications**: Sends formatted notifications to your Telegram
-  chat
-- 🗃️ **Duplicate Prevention**: Stores seen posts in SQLite database to avoid
-  duplicate notifications
-- 🔄 **Scheduled Scraping**: Runs continuously with configurable intervals
-- 🐳 **Docker Support**: Includes Docker and docker-compose configurations
-- 📊 **Comprehensive Logging**: Detailed logging for monitoring and debugging
+- 🏠 **Smart Facebook Scraping**: Automatically monitors multiple Facebook rental groups
+- 🤖 **AI-Powered Filtering**: Uses local LLaMA models (via Ollama) to intelligently filter relevant rental posts
+- 📱 **Telegram Notifications**: Clean, formatted notifications sent directly to your Telegram
+- 🗃️ **Duplicate Prevention**: SQLite database prevents spam from duplicate posts
+- 🔄 **Continuous Operation**: Runs 24/7 with configurable intervals and downtime scheduling
+- 🎯 **Customizable Filters**: Exclude irrelevant posts with keyword blacklists
+- 📊 **Model Accuracy Testing**: Test and tune your AI filtering for optimal results
+- 🐳 **Docker Support**: Easy deployment with Docker and docker-compose
 
-## Prerequisites
+---
 
-- Python 3.11+
-- Facebook account (for group access)
-- Telegram Bot Token
-- Ollama (for LLM filtering)
-- Docker (optional)
+## 📋 Prerequisites
 
-## Quick Start
+Before getting started, you'll need:
 
-### 1. Clone and Setup
+### 1. **Ollama** (Required for AI filtering)
+Install Ollama to run local LLM models:
+- **Regular Installation**: Follow the [official Ollama guide](https://ollama.com)
+- **Docker Installation**: Use [Ollama's official Docker image](https://ollama.com/blog/ollama-is-now-available-as-an-official-docker-image)
+
+### 2. **Python 3.11+**
+### 3. **Facebook Account** (with access to rental groups)
+### 4. **Telegram Bot** (we'll create this together)
+
+---
+
+## 🛠️ Installation & Setup
+
+### Step 1: Clone and Setup Environment
 
 ```bash
 git clone <repository-url>
 cd fb-rentals-telegram
+
+# Create virtual environment (recommended)
+python -m venv venv
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Install Playwright browsers and dependencies
+playwright install-deps
+
+# Copy environment template
 cp .env.example .env
 ```
 
-### 2. Install Dependencies
+### Step 2: Setup Ollama and AI Model
 
 ```bash
-# Install Python dependencies
-pip install -r requirements.txt
+# First, pull the recommended model (this downloads it)
+ollama pull llama3.1:latest
 
-# Install Playwright browsers
-playwright install chromium
+# Then start Ollama service
+ollama serve
 ```
 
-### 3. Configure Environment
+**💡 Tip**: `llama3.1:latest` is recommended.
+**Note**: Change `OLLAMA_HOST` in your `.env` file if running Ollama on a different machine or port.
 
-Edit `.env` file with your configuration:
+### Step 3: Create Telegram Bot
+
+#### Get Bot Token:
+1. Message [@BotFather](https://t.me/BotFather) on Telegram
+2. Send `/newbot` and follow instructions
+3. Copy the bot token
+4. **Detailed guide**: [Creating Telegram Bot](https://docs.radist.online/docs/our-products/radist-web/connections/telegram-bot/instructions-for-creating-and-configuring-a-bot-in-botfather)
+
+#### Get Your Chat ID:
+1. Start a chat with your new bot (send `/start`)
+2. Follow this guide: [Get Telegram Chat ID Guide](https://gist.github.com/nafiesl/4ad622f344cd1dc3bb1ecbe468ff9f8a)
+
+**💡 Pro Tip**: You can add the bot to a **Telegram group** with friends who are also looking for rentals! This way everyone gets the notifications. Perfect for coordinating with roommates or friends, unless you're a nerd without friends, then stick to direct messages.
+
+### Step 4: Configure Environment Variables
+
+Edit your `.env` file (this is an example):
 
 ```env
-# Telegram Bot Configuration
+# Telegram Configuration
 TELEGRAM_BOT_TOKEN=your_bot_token_here
 TELEGRAM_CHAT_ID=your_chat_id_here
 
-# Facebook Groups URLs (comma-separated)
+# Facebook Groups (comma-separated URLs)
 FB_GROUP_URLS=https://www.facebook.com/groups/group1,https://www.facebook.com/groups/group2
 
-# Scraping Configuration
-SCRAPE_INTERVAL_MINUTES=30
-MAX_POSTS_PER_SCRAPE=50
+# Scraping Settings
+SCRAPE_INTERVAL_MINUTES=60  # How often to check for new posts
+MAX_POSTS_PER_SCRAPE=10     # Posts to scan per group each time
 
-# LLaMA Model Configuration
+# AI Model Configuration
 OLLAMA_MODEL=llama3.1:latest
 OLLAMA_HOST=http://localhost:11434
+
+# Browser Settings
+HEADLESS_MODE=true  # Set to false for initial login
+
+# Optional: Scheduled Downtime (quiet hours)
+DOWNTIME_ENABLED=false
+DOWNTIME_START_HOUR=22    # 10 PM
+DOWNTIME_DURATION_HOURS=6 # Until 4 AM
 ```
 
-### 3. Setup Telegram Bot
+### Step 5: Facebook Login & Group Setup
 
-1. Create a new bot via [@BotFather](https://t.me/BotFather)
-2. Get your bot token
-3. Get your chat ID by messaging [@userinfobot](https://t.me/userinfobot)
-4. Add these values to your `.env` file
-
-### 4. Setup Ollama (for AI filtering)
-
+#### Initial Login Test:
 ```bash
-# Install Ollama
-curl -fsSL https://ollama.ai/install.sh | sh
+# Set browser to visible mode for login
+# In .env: HEADLESS_MODE=false
 
-# Start Ollama service
-ollama serve
-
-# Pull the model (in another terminal)
-ollama pull llama3.1:latest
-```
-
-## Installation Methods
-
-### Method 1: Local Installation
-
-```bash
-# Install Python dependencies
-pip install -r requirements.txt
-
-# Install pre-commit and code quality tools (optional)
-pip install pre-commit black isort ruff pydocstyle pyupgrade autoflake
-pre-commit install
-
-# Install Playwright browsers
-playwright install chromium
-
-# Run once to test
-python app.py once
-
-# Run continuously
-python app.py continuous
-```
-
-### Method 2: Docker Compose (Recommended)
-
-```bash
-# Build and start all services
-docker-compose up -d
-
-# Check logs
-docker-compose logs -f fb-rentals-bot
-
-# Stop services
-docker-compose down
-```
-
-### Method 3: Docker Manual
-
-```bash
-# Build the image
-docker build -t fb-rentals-bot .
-
-# Run Ollama separately
-docker run -d --name ollama -p 11434:11434 ollama/ollama:latest
-
-# Run the bot
-docker run -d \
-  --name fb-rentals-bot \
-  --env-file .env \
-  -v $(pwd)/data:/app/data \
-  -v $(pwd)/logs:/app/logs \
-  -v $(pwd)/browser_data:/app/browser_data \
-  fb-rentals-bot
-```
-
-## Facebook Login Setup
-
-Since this app scrapes Facebook, you need to log in to your Facebook account
-first:
-
-1. **Start the application** with GUI mode (set `HEADLESS_MODE=false` in `.env`)
-2. **Run the test command**:
-   ```bash
-   python app.py test
-   ```
-3. **Log in manually** when the browser opens
-4. **Stop the application** and set `HEADLESS_MODE=true`
-5. **Restart** - the login session will be preserved
-
-The browser data is stored in `./browser_data` directory and persists between
-runs.
-
-## Usage Commands
-
-```bash
-# Test configuration and send test message
 python app.py test
-
-# Run scraper once (for testing)
-python app.py once
-
-# Run continuously (default)
-python app.py continuous
-# or simply
-python app.py
 ```
 
-## Cron Job Setup
+When the browser opens:
+1. **Log in to Facebook** manually
+2. **Join the rental groups** you want to monitor
+3. **Close the browser** - your session is now saved
 
-To run the scraper periodically via cron instead of continuously:
-
-```bash
-# Edit crontab
-crontab -e
-
-# Add line to run every 30 minutes
-*/30 * * * * cd /path/to/fb-rentals-telegram && /usr/bin/python app.py once >> logs/cron.log 2>&1
-
-# Or run daily at specific time
-0 9,17 * * * cd /path/to/fb-rentals-telegram && /usr/bin/python app.py once >> logs/cron.log 2>&1
-```
-
-## Configuration Options
-
-### Core Settings
-
-| Variable             | Description                         | Default  |
-| -------------------- | ----------------------------------- | -------- |
-| `TELEGRAM_BOT_TOKEN` | Your Telegram bot token             | Required |
-| `TELEGRAM_CHAT_ID`   | Your Telegram chat ID               | Required |
-| `FB_GROUP_URLS`      | Comma-separated Facebook group URLs | Required |
-
-### Filtering Settings
-
-### Scraping Settings
-
-| Variable                  | Description                     | Default |
-| ------------------------- | ------------------------------- | ------- |
-| `SCRAPE_INTERVAL_MINUTES` | Minutes between scraping cycles | 30      |
-| `MAX_POSTS_PER_SCRAPE`    | Max posts to scrape per group   | 50      |
-| `HEADLESS_MODE`           | Run browser in headless mode    | true    |
-
-### Scheduled Downtime
-
-| Variable                  | Description                   | Default |
-| ------------------------- | ----------------------------- | ------- |
-| `DOWNTIME_ENABLED`        | Enable scheduled downtime     | false   |
-| `DOWNTIME_START_HOUR`     | Hour to start downtime (0-23) | 2       |
-| `DOWNTIME_DURATION_HOURS` | Duration in hours             | 4       |
-
-**Example**: Set `DOWNTIME_ENABLED=true`, `DOWNTIME_START_HOUR=22`,
-`DOWNTIME_DURATION_HOURS=6` for quiet hours from 22:00-04:00.
-
-### LLM Settings
-
-| Variable       | Description       | Default                |
-| -------------- | ----------------- | ---------------------- |
-| `OLLAMA_HOST`  | Ollama server URL | http://localhost:11434 |
-| `OLLAMA_MODEL` | LLM model name    | llama3.1:latest        |
-
-## Project Structure
-
-```
-fb-rentals-telegram/
-├── main.py                    # Main application entry point
-├── scraper.py                 # Facebook scraping logic
-├── analyzer.py                # AI apartment analysis logic
-├── notifier.py                # Telegram notifications
-├── db.py                     # Database operations
-├── requirements.txt          # Production dependencies
-├── .env.example              # Environment variables template
-├── Dockerfile               # Docker image configuration
-├── docker-compose.yaml      # Multi-service Docker setup
-├── .pre-commit-config.yaml  # Code quality hooks
-├── .editorconfig            # Editor configuration
-├── README.md                # Project documentation
-├── .github/                 # GitHub-specific files
-│   └── scripts/             # Utility scripts
-│       └── docker.sh        # Enhanced Docker management script
-├── data/                    # Database files (created at runtime)
-├── logs/                    # Log files (created at runtime)
-└── browser_data/            # Browser session data (created at runtime)
-```
-
-## How It Works
-
-1. **Scraping**: Uses Playwright to scrape posts from Facebook groups
-2. **Filtering**:
-   - Basic filtering (price, keywords, location)
-   - AI filtering using local LLaMA model via Ollama
-   - Fallback filtering if AI is unavailable
-3. **Storage**: Stores posts in SQLite to prevent duplicate notifications
-4. **Notification**: Sends formatted messages to Telegram with post details
-5. **Scheduling**: Runs continuously or on schedule
-
-## Troubleshooting
-
-### Common Issues
-
-**1. Facebook Login Issues**
-
-- Make sure to log in manually first with `HEADLESS_MODE=false`
-- Check if your account has access to the groups
-- Facebook may require verification for suspicious activity
-
-**2. Telegram Not Working**
-
-- Verify bot token and chat ID
-- Make sure the bot is started (send `/start` to your bot)
-- Check if the bot has permission to send messages
-
-**3. Ollama/LLM Issues**
-
-- Ensure Ollama is running: `ollama serve`
-- Check if model is available: `ollama list`
-- The app will use fallback filtering if LLM is unavailable
-
-**4. No Posts Found**
-
-- Check if Facebook groups are public or if you have access
-- Verify group URLs are correct
-- Check filter settings (price, keywords)
-
-### Logs
-
-Check logs for detailed information:
-
-```bash
-# View recent logs
-tail -f logs/app.log
-
-# View Docker logs
-docker-compose logs -f fb-rentals-bot
-```
-
-## Security Considerations
-
-- Keep your `.env` file secure and never commit it
-- Use a dedicated Facebook account for scraping
-- Be respectful of Facebook's terms of service
-- Monitor your usage to avoid rate limiting
-
-## Development
-
-### Code Quality Tools
-
-This project includes comprehensive code quality tools and pre-commit hooks:
-
-- **Black**: Code formatting
-- **isort**: Import sorting
-- **Ruff**: Fast Python linter (replaces flake8, pylint, etc.)
-- **pydocstyle**: Docstring style checking
-- **Pre-commit hooks**: Automatic code quality checks on commit
-
-### Development Setup
-
-```bash
-# Install code quality tools
-pip install pre-commit black isort ruff pydocstyle pyupgrade autoflake
-pre-commit install
-```
-
-**Note about pre-commit**: Pre-commit hooks require the actual linter tools to
-be installed in your environment. The `.pre-commit-config.yaml` file defines
-which tools to run, but the tools themselves (black, ruff, etc.) need to be
-installed via pip for the hooks to work.
-
-### Development Commands
-
-```bash
-# Format code
-black .                  # Format code
-isort .                  # Sort imports
-
-# Lint and check code quality
-ruff check .             # Lint code
-ruff check --fix .       # Lint and auto-fix
-
-# Pre-commit (runs automatically on git commit)
-pre-commit run --all-files  # Run on all files manually
-pre-commit install          # Install hooks
-```
-
-### Git Hooks
-
-Pre-commit hooks automatically run when you commit code:
-
-- Code formatting (Black, isort)
-- Linting (Ruff)
-- Import optimization
-- Trailing whitespace removal
-- File size limits
-- Merge conflict detection
-
-## Project Structure
-
-```
-fb-rentals-telegram/
-├── src/                    # Main source code
-│   ├── __init__.py
-│   ├── main.py            # Main application class
-│   ├── scraper.py         # Facebook scraping logic
-│   ├── analyzer.py        # AI apartment analysis
-│   ├── notifier.py        # Telegram notifications
-│   └── db.py             # Database operations
-├── tests/                 # Test files
-│   ├── __init__.py
-│   ├── conftest.py        # Pytest configuration
-│   ├── test_db.py         # Database tests
-│   ├── test_scraper.py    # Scraper test script
-│   └── simple_test.py     # Simple scraper test
-├── app.py                 # Main entry point
-├── setup.py               # Package setup
-├── pyproject.toml         # Project configuration
-├── requirements.txt       # Python dependencies
-├── .env.example          # Environment template
-├── Dockerfile            # Docker configuration
-├── docker-compose.yaml   # Docker Compose setup
-└── README.md            # This file
-```
-
-## Running Tests
-
-```bash
-# Run the scraper test (no LLM)
-python tests/test_scraper.py
-
-# Run simple interactive test
-python tests/simple_test.py
-
-# Run unit tests (requires pytest)
-pytest tests/
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## License
-
-This project is for educational purposes. Please ensure compliance with
-Facebook's Terms of Service and local laws regarding web scraping.
-
-## Disclaimer
-
-This tool is for personal use only. Users are responsible for complying with
-Facebook's Terms of Service and any applicable laws. The authors are not
-responsible for any misuse of this tool.
+**🔒 Security**: Your login session is stored locally in `browser_data/` and persists between runs.
 
 ---
 
-**Need Help?** Check the logs, verify your configuration, and ensure all
-prerequisites are met. For Facebook login issues, try running in non-headless
-mode first.
+## ⚙️ Facebook Rate Limiting & Best Practices
+
+**Important**: Facebook monitors scraping activity. Follow these guidelines:
+
+- **Scrape Interval**: Don't go below 30 minutes (`SCRAPE_INTERVAL_MINUTES=30`) - not tested but smart guess, not recommended to go lower
+- **Posts Limit**: Keep `MAX_POSTS_PER_SCRAPE` reasonable (10-20)
+- **Group Access**: Only scrape groups you're legitimately a member of
+- **Respectful Usage**: Don't hammer Facebook's servers
+
+**Rate Limiting Signs**:
+- Slow page loads
+- Login challenges
+- Temporary account restrictions
+
+**If rate-limited**: Increase intervals, reduce post limits, or enable downtime scheduling.
+
+---
+
+## 🎯 Optimizing AI Filtering
+
+### Configure Irrelevant Word Exclusions
+
+Add words to exclude posts that aren't rentals:
+
+```env
+# In .env file - the more exclusions, the better the filtering
+ANALYZER_EXCLUDE_WORDS=מחפש,מחפשת,מחפשים,מחפשות,דרוש,דרושה,דרושים,דרושות,למכירה,מכירה,שותף,שותפים,שותפות,שותפה,שותף/ה,שותףה,גבעתיים,סאבלט,סבלט
+```
+
+**💡 Pro Tip**: The more irrelevant keywords you exclude, the better your results!
+
+### Customize the AI Prompt
+
+The current prompt gives excellent results, but you can modify it in `src/analyzer.py` in the `create_analysis_prompt()` function.
+
+**💡 Tip**: The current prompt template has been tested and gives excellent results.
+
+### Test Model Accuracy
+
+Before going live, test your AI filtering:
+
+```bash
+# Run accuracy tests
+python -m pytest tests/model_accuracy_test.py -v
+
+# Expected result: >90% accuracy
+```
+
+**Customizing Tests**: Use GitHub Copilot or modify `tests/model_accuracy_test.py` to create test cases specific to your target rental groups and language.
+
+### Change Test Facebook Group
+
+For testing, modify the test group in your configuration:
+
+```env
+# Use a small, active group for testing
+FB_GROUP_URLS=https://www.facebook.com/groups/your-test-group
+```
+
+---
+
+## 🏃‍♂️ Running the Application
+
+### Test Everything First:
+```bash
+# Test Telegram connectivity, Facebook login, and AI model
+python app.py test
+```
+
+### Run Once (for testing):
+```bash
+# Single scraping cycle
+python app.py once
+```
+
+### Run Continuously:
+```bash
+# Starts continuous monitoring (recommended)
+python app.py continuous
+
+# Or simply:
+python app.py
+```
+
+---
+
+## 📊 Configuration Options
+
+### Core Settings
+
+| Setting | Description | Default | Notes |
+|---------|-------------|---------|--------|
+| `TELEGRAM_BOT_TOKEN` | Your bot token | Required | From @BotFather |
+| `TELEGRAM_CHAT_ID` | Your chat ID | Required | From @userinfobot |
+| `FB_GROUP_URLS` | Groups to monitor | Required | Comma-separated |
+
+### Scraping Control
+
+| Setting | Description | Default | Notes |
+|---------|-------------|---------|--------|
+| `SCRAPE_INTERVAL_MINUTES` | Minutes between cycles | 60 | Min recommended: 30 |
+| `MAX_POSTS_PER_SCRAPE` | Posts per group per cycle | 10 | Balance speed vs coverage |
+
+### AI Model Settings
+
+| Setting | Description | Default | Notes |
+|---------|-------------|---------|--------|
+| `OLLAMA_HOST` | Ollama server URL | localhost:11434 | Change for remote Ollama |
+| `OLLAMA_MODEL` | Model name | llama3.1:latest | **Highly recommended** |
+
+### Smart Scheduling
+
+| Setting | Description | Default | Notes |
+|---------|-------------|---------|--------|
+| `DOWNTIME_ENABLED` | Enable quiet hours | false | Useful for night hours |
+| `DOWNTIME_START_HOUR` | Start hour (0-23) | 22 | 10 PM |
+| `DOWNTIME_DURATION_HOURS` | Duration | 6 | Until 4 AM |
+
+**Example**: Quiet hours from 10 PM to 4 AM:
+```env
+DOWNTIME_ENABLED=true
+DOWNTIME_START_HOUR=22
+DOWNTIME_DURATION_HOURS=6
+```
+
+---
+
+## 🎯 The End Result
+
+Once configured, sit back and relax! The bot will:
+
+1. **Monitor** your Facebook groups 24/7
+2. **Filter out** irrelevant posts using AI
+3. **Send** only quality rental opportunities to your Telegram
+4. **Prevent** duplicate notifications
+5. **Respect** rate limits and quiet hours
+
+**You get**: Quality rental posts delivered to your phone without spending hours scrolling through Facebook groups like an idiot! 🎉
+
+---
+
+## 🔧 Troubleshooting
+
+### Facebook Issues
+- **Can't log in**: Set `HEADLESS_MODE=false`, run test, log in manually
+- **No posts found**: Check group access, verify URLs, test with single group
+- **Rate limited**: Increase intervals, enable downtime, reduce post limits
+
+### Telegram Issues  
+- **No messages**: Verify token/chat ID, send `/start` to bot
+- **Bot permissions**: Ensure bot can send messages
+
+### AI/Ollama Issues
+- **Model not working**: Check `ollama serve` is running, model is downloaded
+- **Poor filtering**: Test accuracy, adjust prompt, add exclusion keywords
+- **Ollama unavailable**: App uses fallback filtering automatically
+
+### General Debugging
+```bash
+# Check logs
+tail -f logs/app.log
+
+# Test individual components
+python app.py test
+
+# Verify model accuracy  
+python -m pytest tests/model_accuracy_test.py -v
+```
+
+---
+
+## 🤝 Contributing
+
+Found a bug? Want to improve the AI prompt? Contributions welcome!
+
+1. Fork the repository
+2. Create a feature branch
+3. Test your changes
+4. Submit a pull request
+
+---
+
+## ⚖️ Disclaimer
+
+This tool is for personal use only. Users are responsible for:
+- Complying with Facebook's Terms of Service
+- Respecting group rules and privacy
+- Following local laws regarding data scraping
+- Using the tool ethically and responsibly
+
+**The authors are not responsible for any misuse of this application.**
+
+---
+
+**Ready to escape the Facebook rental scroll hell? Let's get started!** 🚀
